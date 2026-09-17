@@ -4,3 +4,5 @@
 @media(max-width:760px){.shop-photo-wrap{height:175px}.shop-discovery{flex-direction:column;gap:12px}.shop-sort{justify-content:space-between}.shop-sort select{flex:1;max-width:78%}.shop-filter-row{gap:12px}.shop-taste-filters{width:100%}.shop-taste-filters button{padding:8px 10px;font-size:10px}.shop-photo-tag{font-size:8px;left:8px;bottom:8px}.shop-favorite{width:30px;height:30px;right:8px;top:8px}.shop-photo-overlay b{font-size:28px}.shop-product-details{font-size:10px}.shop-bag-photo{width:55px;min-width:55px;height:70px}.shop-hero-photo{border-radius:14px}}
 
 .shop-bag-line .shop-stock-warning{color:#983f2b;font-weight:600}.shop-add:disabled,.shop-quantity button:disabled{opacity:.5;cursor:not-allowed}
+
+.shop-delivery-date{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:18px 0;font-size:13px}.shop-delivery-date input{border:1px solid #cbd5c0;border-radius:6px;padding:10px;background:white}.shop-delivery-date small{color:#697166}

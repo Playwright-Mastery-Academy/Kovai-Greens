@@ -29,13 +29,25 @@ export async function storeConfig(db: PrismaClient) {
     razorpayPaymentPage: settings.razorpayPaymentPage || '', training: process.env.APP_ENV === 'training' };
 }
 export async function catalog(db: PrismaClient) {
+  const minDate = dayKey(new Date(Date.now() + 86400000));
+  const maxDate = dayKey(new Date(Date.now() + 14 * 86400000));
+  const dates = Array.from({ length: 14 }, (_, i) => dayKey(new Date(Date.now() + (i + 1) * 86400000)));
   const products = await db.product.findMany({ where: { active: true }, orderBy: { name: 'asc' },
     select: { id: true, name: true, variety: true, formats: { select: { grams: true, pricePaise: true }, orderBy: { grams: 'asc' } },
-      harvests: { select: { inventory: { select: { onHandGrams: true, reservedGrams: true, packedGrams: true, bestBefore: true } } } } } });
+      harvests: { select: { inventory: { select: { id: true, onHandGrams: true, reservedGrams: true, packedGrams: true, bestBefore: true } } } } } });
   const config = await storeConfig(db);
-  return { businessName: config.businessName, training: config.training, minDate: dayKey(new Date(Date.now() + 86400000)), maxDate: dayKey(new Date(Date.now() + 14 * 86400000)),
-    products: products.map(({ harvests, ...product }) => ({ ...product, availableGrams: harvests.reduce((sum, h) => { const lot = h.inventory; return sum + (lot && (!lot.bestBefore || lot.bestBefore >= new Date()) ? Math.max(0, lot.onHandGrams - lot.reservedGrams - lot.packedGrams) : 0); }, 0) })) };
+  return { businessName: config.businessName, training: config.training, minDate, maxDate,
+    products: products.map(({ harvests, ...product }) => {
+      // Match confirmation's FEFO ordering and delivery-time expiry boundary.
+      const lots = harvests.flatMap(h => h.inventory ? [h.inventory] : []).sort((a, b) =>
+        (a.bestBefore?.getTime() ?? Infinity) - (b.bestBefore?.getTime() ?? Infinity) || a.id.localeCompare(b.id));
+      const stockByDate = Object.fromEntries(dates.map(date => [date, lots
+        .filter(lot => !lot.bestBefore || lot.bestBefore >= new Date(date + 'T16:00:00+05:30'))
+        .map(lot => Math.max(0, lot.onHandGrams - lot.reservedGrams - lot.packedGrams))]));
+      return { ...product, stockByDate, availableGrams: stockByDate[minDate].reduce((sum, grams) => sum + grams, 0) };
+    }) };
 }
+
 const attempts = new Map<string, { count: number; until: number }>();
 export function limitCheckout(ip: string) {
   const now = Date.now(); for (const [key, value] of attempts) if (value.until <= now) attempts.delete(key);

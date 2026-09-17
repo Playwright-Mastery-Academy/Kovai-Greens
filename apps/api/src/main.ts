@@ -419,7 +419,7 @@ async function orderTransition(tx: any, id: string, status: string, a: Actor) {
   ) {
     // Reservations are made on confirmation. Allocation confirms the fulfillment stage.
     if (status === "CONFIRMED")
-      for (const item of o.items) {
+      for (const item of [...o.items].sort((a, b) => b.packGrams - a.packGrams)) {
         let remaining = item.quantity * item.packGrams;
         const lots = await tx.inventoryLot.findMany({
           where: {
@@ -455,7 +455,9 @@ async function orderTransition(tx: any, id: string, status: string, a: Actor) {
         }
         assert(
           remaining === 0,
-          `Not enough packable ${item.product.name} stock for delivery date. Keep the order as draft until harvested.`,
+          a.id === 'customer-storefront'
+            ? `${item.product.name} is no longer available in that quantity for your delivery date. Choose another date, a smaller pack, or reduce the quantity.`
+            : `Not enough packable ${item.product.name} stock for delivery date. Keep the order as draft until harvested.`,
         );
       }
   }

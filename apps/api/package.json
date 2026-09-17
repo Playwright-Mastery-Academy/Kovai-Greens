@@ -7,7 +7,7 @@
     "dev": "tsx watch src/main.ts",
     "db:generate": "prisma generate",
     "db:deploy": "prisma migrate deploy",
-    "test": "node --import tsx --test src/domain.test.ts src/database.test.ts",
+    "test": "node --import tsx --test src/domain.test.ts src/database.test.ts src/store-availability.test.ts",
     "test:integration": "node --import tsx --test src/integration.test.ts",
     "test:http": "npm run build && node scripts/verify-api.mjs",
     "db:seed": "node --import tsx src/seed.ts",
