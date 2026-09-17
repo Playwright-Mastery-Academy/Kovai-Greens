@@ -178,6 +178,7 @@ model Order {
   items OrderItem[]
   payments Payment[]
   delivery Delivery?
+  checkout StoreCheckout?
   createdAt DateTime @default(now())
   @@unique([scheduleId,occurrenceDate])
   @@index([deliveryAt,status])
@@ -300,4 +301,15 @@ model AuditLog {
 model Setting {
   key String @id
   value String
+}
+model StoreCheckout {
+  id String @id @default(uuid())
+  requestId String @unique
+  requestHash String
+  token String @unique
+  orderId String @unique
+  order Order @relation(fields: [orderId], references: [id])
+  paymentReference String @default("")
+  razorpayLink String @default("")
+  createdAt DateTime @default(now())
 }

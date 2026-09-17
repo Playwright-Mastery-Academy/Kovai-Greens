@@ -118,7 +118,7 @@ try {
       "--import",
       "tsx",
       "--test",
-      sampleTest ? "src/sample.test.ts" : "src/integration.test.ts",
+      sampleTest ? "src/sample.test.ts" : process.argv.includes("--store") ? "src/storefront.test.ts" : "src/integration.test.ts",
     ],
     {
       ...env,

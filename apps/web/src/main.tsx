@@ -1,3 +1,5 @@
+import Shop from "./Shop";
+import StoreSettings from "./StoreSettings";
 import React, {
   useState,
   useEffect,
@@ -464,6 +466,7 @@ function App() {
               <b>{current}</b>
             </div>
             <div className="top-right">
+              <a href="/shop" className="button secondary">Customer store ↗</a>
               <span className="location">
                 <MapPin size={14} /> Coimbatore
               </span>
@@ -3166,6 +3169,7 @@ function SettingsPage() {
         description="Business details, team access and operational history."
       />
       <div className="settings-grid">
+        <StoreSettings />
         <section className="panel settings-form">
           <h2>Business identity</h2>
           <p>Used on public package traceability records.</p>
@@ -3252,11 +3256,12 @@ function SettingsPage() {
     </>
   );
 }
+function RootApplication() { const location = useLocation(); return location.pathname.startsWith("/shop") ? <Shop /> : <App />; }
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <QueryClientProvider client={qc}>
       <BrowserRouter>
-        <App />
+        <RootApplication />
       </BrowserRouter>
     </QueryClientProvider>
   </React.StrictMode>,

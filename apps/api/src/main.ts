@@ -42,6 +42,7 @@ import { z, ZodError } from "zod";
 import { schemas, loginSchema } from "./validation";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import { publicOrigin, tracePage } from "./public-trace";
+import { catalog, checkout, receipt, submitReference, limitCheckout, storeSettingsSchema, paymentLinkSchema } from "./storefront";
 const QRCode = require("qrcode") as {
   toDataURL: (text: string, options?: any) => Promise<string>;
 };
@@ -717,6 +718,19 @@ class Operations {
         people.find((p) => p.id === h.actorId)?.name || "Scheduled operation",
     }));
   }
+  @Get("store-checkouts") async storeOrders(@Req() r: R) {
+    assertRole(["OWNER", "ADMIN", "SALES"].includes(r.actor.role));
+    return db.storeCheckout.findMany({ take: 100, orderBy: { createdAt: "desc" }, include: { order: { select: { number: true, status: true, totalPaise: true, customer: { select: { name: true } } } } } });
+  }
+  @Patch("store-checkouts/:id/payment-link") async storePaymentLink(@Req() r: R, @Param("id") id: string, @Body() body: unknown) {
+    assertRole(["OWNER", "ADMIN"].includes(r.actor.role));
+    const { url } = paymentLinkSchema.parse(body);
+    return transact(async tx => {
+      const record = await tx.storeCheckout.update({ where: { id }, data: { razorpayLink: url } });
+      await audit(tx, r.actor, "PAYMENT_LINK_UPDATED", "orders", record.orderId, undefined, { url });
+      return { saved: true };
+    });
+  }
   @Get("settings") async settings() {
     return Object.fromEntries(
       (await db.setting.findMany()).map((s) => [s.key, s.value]),
@@ -728,6 +742,7 @@ class Operations {
       .object({
         businessName: z.string().min(1).max(120),
         farmAddress: z.string().max(500),
+        ...storeSettingsSchema,
       })
       .strict()
       .parse(b);
@@ -1839,8 +1854,19 @@ class PublicController {
     };
   }
 }
+@Controller("api/store")
+class StoreController {
+  @Get("catalog") catalog() { return catalog(db); }
+  @Post("checkout") checkout(@Req() req: Request, @Body() body: unknown) {
+    limitCheckout(req.ip || "unknown"); return checkout(db, body, transact, orderTransition);
+  }
+  @Get("orders/:token") receipt(@Param("token") token: string) { return receipt(db, token); }
+  @Post("orders/:token/payment-reference") reference(@Req() req: Request, @Param("token") token: string, @Body() body: unknown) {
+    limitCheckout((req.ip || "unknown") + ":reference"); return submitReference(db, token, body);
+  }
+}
 @Module({
-  controllers: [PublicController, AuthController, Operations],
+  controllers: [StoreController, PublicController, AuthController, Operations],
   providers: [AuthGuard],
 })
 class AppModule {}
