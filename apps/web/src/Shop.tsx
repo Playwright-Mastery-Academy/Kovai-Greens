@@ -66,6 +66,14 @@ export default function Shop() {
   useEffect(() => { try { localStorage.setItem('kg-cart-v1', JSON.stringify(cart)); } catch {} }, [cart]);
   useEffect(() => { setError(''); setNotice(''); window.scrollTo(0, 0); if (token) { setReceipt(null); request('orders/' + token).then(r => { setReceipt(r); setReference(r.reference || ''); }).catch(e => setError(e.message)); } }, [location.pathname]);
   useEffect(() => { if (notice) { const timer = setTimeout(() => setNotice(''), 4000); return () => clearTimeout(timer); } }, [notice]);
+  useEffect(() => {
+    if (!token) return;
+    let active = true;
+    const refresh = () => { if (document.visibilityState === 'visible') request('orders/' + token).then(data => { if (active) setReceipt(data); }).catch(() => {}); };
+    const timer = window.setInterval(refresh, 15000);
+    window.addEventListener('focus', refresh);
+    return () => { active = false; window.clearInterval(timer); window.removeEventListener('focus', refresh); };
+  }, [token]);
   const selectedDate = deliveryDate || catalog?.minDate || '';
   const products: Product[] = (catalog?.products || []).map((p: Product) => {
     const stockLots = p.stockByDate?.[selectedDate] || [];
@@ -121,9 +129,9 @@ export default function Shop() {
       <button className="shop-back" onClick={() => navigate('/shop')}><ChevronLeft size={16}/> Back to the greens</button>
       {error && <p className="shop-error" role="alert">{error}</p>}
       {!receipt && !error && <div className="shop-empty" role="status">Loading your order…</div>}
-      {receipt && <div className="shop-receipt"><section className="shop-receipt-heading"><span className="shop-check"><Check size={26}/></span><p className="shop-eyebrow">THANK YOU FOR CHOOSING LOCAL</p><h1>{receipt.paymentStatus === 'PAID' ? 'Payment confirmed.' : receipt.status === 'CANCELLED' ? 'Order cancelled.' : 'Your greens are reserved.'}</h1><p>Order <strong>{receipt.number}</strong> · {receipt.status.replaceAll('_', ' ').toLowerCase()}</p><p>Delivery requested for {new Date(receipt.deliveryAt).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'long' })}. The farm will coordinate delivery with you.</p></section>
-      <div className="shop-checkout-grid"><section className="shop-paper"><h2>{receipt.paymentStatus === 'PAID' ? 'All settled' : 'Complete your payment'}</h2><div className="shop-payment-status">{receipt.paymentStatus.replaceAll('_', ' ')}</div>
-      {receipt.paymentStatus === 'AWAITING_VERIFICATION' && <p className="shop-note">Reference received. The farm will check the payment before marking this order paid. Please don’t pay again.</p>}
+      {receipt && <div className="shop-receipt"><section className="shop-receipt-heading"><span className="shop-check"><Check size={26}/></span><p className="shop-eyebrow">THANK YOU FOR CHOOSING LOCAL</p><h1>{receipt.status === 'CANCELLED' ? 'Order cancelled.' : receipt.status === 'DELIVERED' ? 'Your order is delivered.' : receipt.status === 'OUT_FOR_DELIVERY' ? 'Your order is on its way.' : ['PACKING', 'PACKED', 'ALLOCATED'].includes(receipt.status) ? 'We’re preparing your order.' : 'Your order is confirmed.'}</h1><p>Order <strong>{receipt.number}</strong> · {receipt.status.replaceAll('_', ' ').toLowerCase()}</p><p>Delivery requested for {new Date(receipt.deliveryAt).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'long' })}. The farm will coordinate delivery with you.</p></section>
+      <div className="shop-checkout-grid"><section className="shop-paper"><h2>{receipt.paymentStatus === 'PAID' ? 'Payment received' : receipt.paymentStatus === 'AWAITING_VERIFICATION' ? 'Payment reference received' : 'Payment details'}</h2><div className="shop-payment-status">{receipt.paymentStatus === 'AWAITING_VERIFICATION' ? 'Reference submitted' : receipt.paymentStatus === 'PAID' ? 'Paid' : receipt.paymentStatus === 'CANCELLED' ? 'Cancelled' : 'Payment pending'}</div>
+      {receipt.paymentStatus === 'AWAITING_VERIFICATION' && <p className="shop-note">Your payment reference has been received. The farm will check the transaction separately. Please don’t pay again.</p>}
       {receipt.balancePaise > 0 && receipt.status !== 'CANCELLED' && <><p className="shop-note">Amount to pay: <strong>{money(receipt.balancePaise)}</strong>. Include <strong>{receipt.number}</strong> as your payment reference.</p>
       {receipt.payment.upiUrl && <div className="shop-upi"><img src={receipt.payment.qrDataUrl} alt={'UPI payment QR for ' + receipt.number} width="240" height="240"/><div><h3>Scan & pay with UPI</h3><p>{receipt.payment.payeeName}</p><code>{receipt.payment.upiId}</code><a className="shop-primary" href={receipt.payment.upiUrl}>Open your UPI app <ArrowUpRight size={16}/></a></div></div>}
       {receipt.payment.razorpayUrl && <div className="shop-razorpay"><a className="shop-primary" href={receipt.payment.razorpayUrl} target="_blank" rel="noopener noreferrer">Pay on Razorpay <ArrowUpRight size={16}/></a><p>Check the amount and payee on Razorpay before paying. Returning here does not confirm payment.</p></div>}

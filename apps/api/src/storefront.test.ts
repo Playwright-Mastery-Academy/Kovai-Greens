@@ -33,6 +33,11 @@ test('Storefront: authoritative pricing, atomic stock, idempotent checkout, priv
   const submitted=await call('store/orders/'+receipt.token+'/payment-reference','POST',{reference:'UPI123456789'});assert.equal(submitted.data.paymentStatus,'AWAITING_VERIFICATION');
   assert.equal((await call('payments','GET',undefined,true)).data.total,0,'Customer reference is not a payment');
   const saved=(await call('store-checkouts','GET',undefined,true)).data[0];
+  for (const status of ['ALLOCATED','PACKING','PACKED','OUT_FOR_DELIVERY']) assert.equal((await call('orders/'+saved.orderId,'PATCH',{status},true)).status,200,'Driverless transition: '+status);
+  const dispatched = await call('store/orders/'+receipt.token);
+  assert.equal(dispatched.data.status,'OUT_FOR_DELIVERY');
+  assert.equal(dispatched.data.paymentStatus,'AWAITING_VERIFICATION','Dispatch does not falsely record a payment');
+
   assert.equal((await call('store-checkouts/'+saved.id+'/payment-link','PATCH',{url:'javascript:alert(1)'},true)).status,400);
   assert.equal((await call('store-checkouts/'+saved.id+'/payment-link','PATCH',{url:'https://rzp.io/isolated-order'},true)).status,200);
   assert.equal((await call('store/orders/'+receipt.token)).data.payment.razorpayUrl,'https://rzp.io/isolated-order');

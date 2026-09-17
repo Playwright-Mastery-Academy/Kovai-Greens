@@ -515,7 +515,7 @@ async function orderTransition(tx: any, id: string, status: string, a: Actor) {
       }
   if (status === "OUT_FOR_DELIVERY") {
     const d = await tx.delivery.findUnique({ where: { orderId: id } });
-    assert(d?.driverId, "Assign a driver before dispatch");
+    assert(d, "Pack the order before dispatch");
     for (const item of o.items)
       for (const al of item.allocations) {
         assert(

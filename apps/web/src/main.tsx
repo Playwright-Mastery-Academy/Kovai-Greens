@@ -2291,13 +2291,13 @@ function DeliveryForm({
       {user?.role !== "DELIVERY" && (
         <div className="form-grid">
           <label>
-            Driver
+            Driver (optional)
             {users.data ? (
               <select
                 value={driver}
                 onChange={(e) => setDriver(e.target.value)}
               >
-                <option value="">Select driver</option>
+                <option value="">No driver assigned</option>
                 {users.data.data
                   .filter((u: Row) => !!u.id)
                   .map((u: Row) => (
