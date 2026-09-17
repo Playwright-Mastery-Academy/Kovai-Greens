@@ -2026,6 +2026,8 @@ function Records({ resource: page }: { resource: string }) {
                 <span>Outstanding balance</span>
                 <b>{money(selected.totalPaise - selected.paidPaise)}</b>
               </div>
+              {user && ['OWNER','ADMIN','SALES'].includes(user.role) && <OrderPaymentConfirmation key={selected.id} order={selected} onSaved={() => { saved(); setSelected(null); }}/>}
+
               <Link
                 className="text-link"
                 to={"/traceability?id=" + selected.id}
@@ -3258,6 +3260,32 @@ function SettingsPage() {
     </>
   );
 }
+
+function OrderPaymentConfirmation({ order, onSaved }: { order: Row; onSaved: () => void }) {
+  const [reference, setReference] = useState(order.checkout?.paymentReference || '');
+  const [method, setMethod] = useState('UPI');
+  const [verified, setVerified] = useState(false);
+  const [busy, setBusy] = useState(false), [error, setError] = useState('');
+  const attempt = useRef({ requestKey: crypto.randomUUID(), paidAt: new Date().toISOString() });
+  const balance = Math.max(0, order.totalPaise - order.paidPaise);
+  if (!balance) return <p className="success">Payment confirmed · Paid in full</p>;
+  if (order.status === 'CANCELLED') return null;
+  if (order.status === 'DRAFT') return <p>Confirm the order using the order status action below before confirming payment.</p>;
+  return <section className="payment-confirmation"><h3>Confirm payment received</h3>
+    <p>Outstanding: <strong>{money(balance)}</strong>. Record this only after checking that the money was received.</p>
+    {order.checkout?.paymentReference && <p>Customer reference: <strong>{order.checkout.paymentReference}</strong></p>}
+    <div className="form-grid"><label>Payment method<select value={method} disabled={busy} onChange={e => setMethod(e.target.value)}>{['UPI','CASH','BANK_TRANSFER','CARD','OTHER'].map(m => <option key={m}>{m}</option>)}</select></label>
+    <label>Payment reference<input value={reference} maxLength={200} disabled={busy} onChange={e => setReference(e.target.value)}/></label></div>
+    <label><input type="checkbox" checked={verified} disabled={busy} onChange={e => setVerified(e.target.checked)}/> I have verified receipt of {money(balance)}.</label>
+    {error && <p className="error" role="alert">{error}</p>}
+    <div className="action-row"><button className="button primary" disabled={busy || !verified} onClick={async () => {
+      setBusy(true); setError('');
+      try { await api('payments', { method:'POST', body:JSON.stringify({ orderId:order.id, amountPaise:balance, kind:'PAYMENT', method, reference, ...attempt.current }) }); onSaved(); }
+      catch(e: any) { setError(e.message); } finally { setBusy(false); }
+    }}>{busy ? 'Confirming payment…' : 'Confirm payment received'}</button><Link className="text-link" to="/payments">Record a partial payment</Link></div>
+  </section>;
+}
+
 function RootApplication() { const location = useLocation(); return location.pathname.startsWith("/shop") ? <Shop /> : <App />; }
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

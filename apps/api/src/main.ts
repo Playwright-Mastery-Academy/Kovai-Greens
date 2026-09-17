@@ -331,6 +331,7 @@ const orderInclude = {
     },
   },
   payments: true,
+  checkout: { select: { paymentReference: true } },
   delivery: true,
 } as const;
 const model: Record<string, string> = {
