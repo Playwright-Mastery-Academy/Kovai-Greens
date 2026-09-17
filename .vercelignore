@@ -1,0 +1,12 @@
+.git
+.openai
+.sites-runtime
+node_modules
+.env
+.env.*
+dist
+apps/api/dist
+*.log
+*.zip
+
+.local-data

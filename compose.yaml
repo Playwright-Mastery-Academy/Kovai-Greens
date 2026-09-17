@@ -1,0 +1,60 @@
+name: ${COMPOSE_PROJECT_NAME:-kovai-production}
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-kovai}
+      POSTGRES_USER: ${POSTGRES_USER:-kovai}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set a unique database password}
+    volumes: [postgres-data:/var/lib/postgresql/data]
+    healthcheck:
+      test:
+        [CMD-SHELL, 'pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"']
+      interval: 5s
+      timeout: 5s
+      retries: 15
+    restart: unless-stopped
+  migrate:
+    build: { context: ., target: api }
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-kovai}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-kovai}
+    command:
+      [
+        ./node_modules/.bin/prisma,
+        migrate,
+        deploy,
+        --schema,
+        apps/api/prisma/schema.prisma,
+      ]
+    depends_on:
+      db: { condition: service_healthy }
+  api:
+    build: { context: ., target: api }
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-kovai}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-kovai}
+      JWT_SECRET: ${JWT_SECRET:?Set a unique signing secret of 32 or more characters}
+      WEB_ORIGIN: ${WEB_ORIGIN:-http://localhost:8080}
+      NODE_ENV: ${NODE_ENV:-development}
+      APP_ENV: ${APP_ENV:-production}
+      COOKIE_SAME_SITE: ${COOKIE_SAME_SITE:-strict}
+      PUBLIC_ORIGIN: ${PUBLIC_ORIGIN:-http://localhost:8080}
+      PORT: 3001
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+    restart: unless-stopped
+  scheduler:
+    build: { context: ., target: api }
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-kovai}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-kovai}
+      JWT_SECRET: ${JWT_SECRET:?Set a unique signing secret}
+    command: [node, apps/api/dist/recurrence-worker.js]
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+    restart: unless-stopped
+  web:
+    build: { context: ., target: web }
+    ports: ["127.0.0.1:${WEB_PORT:-8080}:80"]
+    depends_on: [api]
+    restart: unless-stopped
+volumes:
+  postgres-data:

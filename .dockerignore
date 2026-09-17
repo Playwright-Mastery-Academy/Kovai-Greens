@@ -1,0 +1,10 @@
+node_modules
+.git
+.env
+.env.*
+.sites-runtime
+dist
+apps/api/dist
+*.log
+
+.local-data

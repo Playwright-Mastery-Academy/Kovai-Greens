@@ -1,0 +1,303 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+model User {
+  id String @id @default(uuid())
+  name String
+  username String @unique
+  email String? @unique
+  passwordHash String
+  role String
+  active Boolean @default(true)
+  createdAt DateTime @default(now())
+  sessions Session[]
+}
+model Session {
+  id String @id @default(uuid())
+  userId String
+  user User @relation(fields:[userId], references:[id])
+  tokenHash String @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+model Product {
+  id String @id @default(uuid())
+  name String @unique
+  variety String
+  description String @default("")
+  growingDays Int
+  yieldGramsPerTray Int
+  seedGramsPerTray Int
+  pricePaisePerKg Int
+  lowStockGrams Int @default(0)
+  storageInstructions String @default("")
+  active Boolean @default(true)
+  createdAt DateTime @default(now())
+  formats ProductFormat[]
+  seedLots SeedLot[]
+  batches GrowingBatch[]
+  harvests Harvest[]
+  items OrderItem[]
+  schedules Schedule[]
+  scheduleItems ScheduleItem[]
+}
+model ProductFormat {
+  id String @id @default(uuid())
+  productId String
+  product Product @relation(fields:[productId], references:[id])
+  grams Int
+  pricePaise Int
+  @@unique([productId,grams])
+}
+model Supplier {
+  id String @id @default(uuid())
+  name String
+  contact String @default("")
+  phone String
+  email String @default("")
+  address String @default("")
+  suppliedProducts String @default("")
+  gst String @default("")
+  active Boolean @default(true)
+  createdAt DateTime @default(now())
+  seedLots SeedLot[]
+}
+model SeedLot {
+  id String @id @default(uuid())
+  lotNumber String @unique
+  productId String
+  product Product @relation(fields:[productId], references:[id])
+  supplierId String
+  supplier Supplier @relation(fields:[supplierId], references:[id])
+  purchasedAt DateTime
+  expiresAt DateTime
+  purchasedGrams Int
+  remainingGrams Int
+  costPaise Int
+  location String
+  batches GrowingBatch[]
+  createdAt DateTime @default(now())
+}
+model GrowingBatch {
+  id String @id @default(uuid())
+  code String @unique
+  productId String
+  product Product @relation(fields:[productId], references:[id])
+  seedLotId String
+  seedLot SeedLot @relation(fields:[seedLotId], references:[id])
+  sownAt DateTime
+  germinationAt DateTime
+  harvestDueAt DateTime
+  trays Int
+  seedGrams Int
+  medium String
+  expectedGrams Int
+  status String @default("PLANNED")
+  notes String @default("")
+  createdAt DateTime @default(now())
+  harvests Harvest[]
+  expenses Expense[]
+}
+model Harvest {
+  id String @id @default(uuid())
+  batchId String
+  batch GrowingBatch @relation(fields:[batchId], references:[id])
+  productId String
+  product Product @relation(fields:[productId], references:[id])
+  harvestedAt DateTime
+  harvestedGrams Int
+  usableGrams Int
+  rejectedGrams Int
+  grade String
+  employeeId String
+  notes String @default("")
+  inventory InventoryLot?
+  createdAt DateTime @default(now())
+}
+model InventoryLot {
+  id String @id @default(uuid())
+  harvestId String @unique
+  harvest Harvest @relation(fields:[harvestId], references:[id])
+  onHandGrams Int
+  reservedGrams Int @default(0)
+  packedGrams Int @default(0)
+  bestBefore DateTime?
+  allocations Allocation[]
+  movements StockMovement[]
+}
+model StockMovement {
+  id String @id @default(uuid())
+  lotId String
+  lot InventoryLot @relation(fields:[lotId], references:[id])
+  kind String
+  onHandDelta Int
+  reservedDelta Int
+  packedDelta Int
+  reference String
+  actorId String
+  createdAt DateTime @default(now())
+}
+model Customer {
+  id String @id @default(uuid())
+  name String
+  type String
+  contact String @default("")
+  phone String
+  email String @default("")
+  billingAddress String
+  deliveryAddress String
+  area String
+  city String @default("Coimbatore")
+  pincode String
+  paymentTermsDays Int @default(0)
+  active Boolean @default(true)
+  notes String @default("")
+  orders Order[]
+  schedules Schedule[]
+  createdAt DateTime @default(now())
+}
+model Order {
+  id String @id @default(uuid())
+  number String @unique
+  customerId String
+  customer Customer @relation(fields:[customerId], references:[id])
+  deliveryAt DateTime
+  status String @default("DRAFT")
+  subtotalPaise Int
+  discountPaise Int @default(0)
+  taxPaise Int @default(0)
+  totalPaise Int
+  notes String @default("")
+  scheduleId String?
+  schedule Schedule? @relation(fields:[scheduleId], references:[id])
+  occurrenceDate String?
+  items OrderItem[]
+  payments Payment[]
+  delivery Delivery?
+  createdAt DateTime @default(now())
+  @@unique([scheduleId,occurrenceDate])
+  @@index([deliveryAt,status])
+}
+model OrderItem {
+  id String @id @default(uuid())
+  orderId String
+  order Order @relation(fields:[orderId], references:[id])
+  productId String
+  product Product @relation(fields:[productId], references:[id])
+  packGrams Int
+  quantity Int
+  unitPricePaise Int
+  allocations Allocation[]
+}
+model Allocation {
+  id String @id @default(uuid())
+  itemId String
+  item OrderItem @relation(fields:[itemId], references:[id])
+  lotId String
+  lot InventoryLot @relation(fields:[lotId], references:[id])
+  grams Int
+  packing PackingBatch?
+  @@unique([itemId,lotId])
+}
+model PackingBatch {
+  id String @id @default(uuid())
+  allocationId String @unique
+  allocation Allocation @relation(fields:[allocationId], references:[id])
+  publicToken String @unique @default(uuid())
+  packs Int
+  packGrams Int
+  packedAt DateTime @default(now())
+  packedBy String
+  bestBefore DateTime?
+  status String @default("PACKED")
+}
+model Schedule {
+  id String @id @default(uuid())
+  customerId String
+  customer Customer @relation(fields:[customerId], references:[id])
+  kind String
+  name String
+  productId String
+  product Product @relation(fields:[productId], references:[id])
+  packGrams Int
+  quantity Int
+  unitPricePaise Int
+  weekdays Int[]
+  startAt DateTime
+  endAt DateTime?
+  participatingStudents Int?
+  grades String @default("")
+  billingCycle String @default("PER_ORDER")
+  status String @default("ACTIVE")
+  orders Order[]
+  items ScheduleItem[]
+  createdAt DateTime @default(now())
+}
+model ScheduleItem {
+  id String @id @default(uuid())
+  scheduleId String
+  schedule Schedule @relation(fields:[scheduleId], references:[id])
+  productId String
+  product Product @relation(fields:[productId], references:[id])
+  packGrams Int
+  quantity Int
+  unitPricePaise Int
+  @@index([scheduleId])
+}
+model Delivery {
+  id String @id @default(uuid())
+  orderId String @unique
+  order Order @relation(fields:[orderId], references:[id])
+  address String
+  area String
+  deliveryAt DateTime
+  timeSlot String @default("")
+  route String @default("")
+  driverId String?
+  vehicle String @default("")
+  status String @default("PENDING")
+  notes String @default("")
+}
+model Payment {
+  id String @id @default(uuid())
+  orderId String
+  order Order @relation(fields:[orderId], references:[id])
+  amountPaise Int
+  method String
+  reference String
+  requestKey String @unique
+  kind String @default("PAYMENT")
+  paidAt DateTime
+  actorId String
+  createdAt DateTime @default(now())
+}
+model Expense {
+  id String @id @default(uuid())
+  category String
+  description String
+  amountPaise Int
+  incurredAt DateTime
+  batchId String?
+  batch GrowingBatch? @relation(fields:[batchId], references:[id])
+  actorId String
+  createdAt DateTime @default(now())
+}
+model AuditLog {
+  id String @id @default(uuid())
+  actorId String
+  action String
+  entity String
+  entityId String
+  oldValue Json?
+  newValue Json?
+  createdAt DateTime @default(now())
+  @@index([entity,entityId,createdAt])
+}
+model Setting {
+  key String @id
+  value String
+}
