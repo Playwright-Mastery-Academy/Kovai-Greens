@@ -7,12 +7,12 @@ const QR = require('qrcode') as { toDataURL: (value: string, options?: any) => P
 const razorpayHost = (value: string, pageOnly = false) => {
   if (!value) return true;
   try { const u = new URL(value); return u.protocol === 'https:' && !u.username && !u.password &&
-    (pageOnly ? u.hostname === 'pages.razorpay.com' : ['rzp.io', 'razorpay.me', 'razorpay.com'].includes(u.hostname) || u.hostname.endsWith('.razorpay.com')); } catch { return false; }
+    (pageOnly ? (u.hostname === 'pages.razorpay.com' || (u.hostname === 'razorpay.me' && /^\/@[a-zA-Z0-9._-]+\/?$/.test(u.pathname))) : ['rzp.io', 'razorpay.me', 'razorpay.com'].includes(u.hostname) || u.hostname.endsWith('.razorpay.com')); } catch { return false; }
 };
 export const storeSettingsSchema = {
   upiId: z.string().trim().max(120).refine(v => !v || /^[a-zA-Z0-9._-]{2,}@[a-zA-Z0-9.-]{2,}$/.test(v), 'Enter a valid UPI ID').optional(),
   upiPayeeName: z.string().trim().max(100).optional(),
-  razorpayPaymentPage: z.string().trim().max(500).refine(v => razorpayHost(v, true), 'Use a reusable https://pages.razorpay.com payment page; assign single-use links per order').optional(),
+  razorpayPaymentPage: z.string().trim().max(500).refine(v => razorpayHost(v, true), 'Use a Razorpay.me profile or reusable Razorpay Payment Page; assign single-use links per order').optional(),
 };
 export const paymentLinkSchema = z.object({ url: z.string().trim().max(500).refine(v => razorpayHost(v), 'Use an HTTPS Razorpay payment link') }).strict();
 export const checkoutSchema = z.object({

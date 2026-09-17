@@ -10,8 +10,8 @@ export default function StoreSettings() {
     <form onSubmit={async e => { e.preventDefault(); setError(''); setMessage(''); setBusy(true); try { const current = await api('settings'); await api('settings', { method:'PATCH', body:JSON.stringify({ businessName:current.businessName || 'Kovai Greens', farmAddress:current.farmAddress || '', ...values }) }); setMessage('Customer payment details saved.'); } catch(e:any){ setError(e.message); } finally { setBusy(false); } }}>
       <label>UPI ID<input value={values.upiId} onChange={e=>setValues({...values,upiId:e.target.value})} placeholder="your-business@bank"/></label>
       <label>UPI payee name<input value={values.upiPayeeName} onChange={e=>setValues({...values,upiPayeeName:e.target.value})} placeholder="Name customers should verify"/></label>
-      <label>Reusable Razorpay Payment Page (optional)<input type="url" value={values.razorpayPaymentPage} onChange={e=>setValues({...values,razorpayPaymentPage:e.target.value})} placeholder="https://pages.razorpay.com/..."/></label>
-      <p>UPI QR codes include the order amount and reference. Use a reusable Payment Page here; assign single-use Razorpay Payment Links to individual orders below. No gateway keys are required.</p>
+      <label>Razorpay.me profile or reusable Payment Page (optional)<input type="url" value={values.razorpayPaymentPage} onChange={e=>setValues({...values,razorpayPaymentPage:e.target.value})} placeholder="https://pages.razorpay.com/..."/></label>
+      <p>UPI QR codes include the order amount and reference. Use a Razorpay.me profile or reusable Payment Page here; assign single-use Razorpay Payment Links to individual orders below. No gateway keys are required.</p>
       <button className="button primary" disabled={busy}>Save payment details</button>
     </form>{error&&<p className="error" role="alert">{error}</p>}{message&&<p role="status">{message}</p>}
     <h2 style={{marginTop:32}}>Customer web orders</h2><p>Payment references are unverified. Check your bank or Razorpay, then record the actual receipt under Payments. A customer submission never marks an order paid.</p>
