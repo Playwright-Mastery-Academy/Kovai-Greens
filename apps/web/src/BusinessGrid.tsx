@@ -10,13 +10,13 @@ const gridTheme = themeQuartz.withParams({
   backgroundColor: "#ffffff",
   foregroundColor: "#253a32",
   borderColor: "#e6ebe7",
-  headerBackgroundColor: "#f7f9f7",
-  fontFamily: "Inter, system-ui, sans-serif",
+  headerBackgroundColor: "#edf3ec",
+  fontFamily: "DM Sans, system-ui, sans-serif",
   fontSize: 14,
   headerFontSize: 12,
   rowHeight: 57,
   headerHeight: 45,
-  wrapperBorderRadius: 8,
+  wrapperBorderRadius: 12,
 });
 export default function BusinessGrid(props: any) {
   return <AgGridReact {...props} theme={gridTheme} />;

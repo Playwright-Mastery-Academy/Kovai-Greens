@@ -101,6 +101,7 @@ import {
   type Field,
 } from "./config";
 import "./style.css";
+import "./visualRefresh.css";
 const BusinessGrid = React.lazy(() => import("./BusinessGrid"));
 const qc = new QueryClient({
   defaultOptions: {
@@ -850,6 +851,7 @@ function Dashboard() {
           New order
         </button>
       </PageHeading>
+      <section className="farm-welcome"><div className="farm-welcome-copy"><span className="welcome-label"><Sprout size={15}/> ROOTED IN COIMBATORE</span><h2>A little care.<br/>A thriving farm.</h2><p>Welcome back{user?.name ? ', ' + user.name.split(' ')[0] : ''}. Here’s your farm, from the next harvest to the next doorstep.</p><div className="welcome-links"><Link to="/batches">View growing batches <ArrowUpRight size={15}/></Link><a href="/shop">Visit customer store <ArrowUpRight size={15}/></a></div></div><div className="farm-welcome-photo"><img src="https://images.pexels.com/photos/9031151/pexels-photo-9031151.jpeg?auto=compress&cs=tinysrgb&w=1000" alt="Representative sunflower microgreens"/><span><Leaf size={14}/> From seed to doorstep</span></div></section>
       {q.error && (
         <div className="error">
           {q.error.message}
