@@ -3,7 +3,7 @@
   "framework": null,
   "buildCommand": "npm run vercel-build",
   "outputDirectory": "dist",
-  "installCommand": "npm ci",
+  "installCommand": "npm ci --include=dev",
   "functions": {
     "api/index.js": {
       "includeFiles": "{apps/api/dist/**,node_modules/.prisma/client/**}",
