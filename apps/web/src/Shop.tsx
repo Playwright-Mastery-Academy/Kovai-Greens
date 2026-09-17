@@ -123,7 +123,6 @@ export default function Shop() {
   const name = catalog?.businessName || 'Kovai Greens';
   return <div className="shop-app"><div className="shop-topline">GROWN WITH CARE. MADE FOR EVERYDAY PLATES. <span>COIMBATORE</span></div>
     <header className="shop-header"><a href="/shop" className="shop-brand"><span><Sprout size={28}/></span><b>{name}<small>THE MICROGREENS STORE</small></b></a><nav><a href="/shop#greens">Our greens</a><a href="/">Farm admin <ArrowUpRight size={13}/></a><button className="shop-cart-button" onClick={() => navigate('/shop/checkout')}><ShoppingBag size={19}/> Your bag <span>{count}</span></button></nav></header>
-    {catalog?.training && <div className="shop-training">Training store · Fictional inventory and orders for testing.</div>}
     {notice && <div className="shop-toast" role="status"><Check size={18}/>{notice}</div>}
     <main className="shop-main">{loadError ? <section className="shop-empty"><h1>We couldn’t load the store</h1><p role="alert">{loadError}</p><button className="shop-primary" onClick={load}>Try again</button></section> : !catalog ? <section className="shop-empty" role="status">Loading the greens…</section> : token ? <>
       <button className="shop-back" onClick={() => navigate('/shop')}><ChevronLeft size={16}/> Back to the greens</button>

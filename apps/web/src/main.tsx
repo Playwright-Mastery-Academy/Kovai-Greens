@@ -471,18 +471,7 @@ function App() {
               <span className="location">
                 <MapPin size={14} /> Coimbatore
               </span>
-              <span
-                className={
-                  "environment " +
-                  (health.data?.environment === "training" ? "training" : "")
-                }
-              >
-                {health.data?.environment === "training"
-                  ? "Training environment"
-                  : user
-                    ? "Business workspace"
-                    : "Setup required"}
-              </span>
+              <span className="environment">{user ? "Business workspace" : "Setup required"}</span>
               <button
                 className="avatar small"
                 aria-label="Account and password"

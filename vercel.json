@@ -25,5 +25,8 @@
       "path": "/api/cron/recurrence",
       "schedule": "0 0 * * *"
     }
-  ]
+  ],
+  "env": {
+    "APP_ENV": "production"
+  }
 }
