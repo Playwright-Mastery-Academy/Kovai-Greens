@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ArrowRight, ArrowUpRight, Check, ChevronLeft, Leaf, Minus, Plus, ShoppingBag, Sprout, Truck, X, RefreshCw, ShieldCheck } from 'lucide-react';
 import './shop.css';
+import { NutritionDetails, NutritionGuide } from './ShopNutrition';
 import { productPhoto, taste, servingIdea } from './shopProducts';
 import { Heart, Search } from 'lucide-react';
 function ProductPhoto({ variety, className = '', eager = false }: { variety: string; className?: string; eager?: boolean }) {
@@ -27,6 +28,7 @@ function ProductCard({ product, add, favorite, toggleFavorite }: { product: Prod
       <label className="shop-pack">Choose your pack<select aria-label={'Pack size for ' + product.name} value={grams} onChange={e => setGrams(Number(e.target.value))}>{product.formats.map(f => <option key={f.grams} value={f.grams}>{f.grams} g</option>)}</select></label>
       <div className="shop-product-bottom"><strong>{money(format?.pricePaise || 0)}</strong><button className="shop-add" disabled={!available} onClick={() => add(product, grams)} aria-label={'Add ' + product.name + ' to cart'}><Plus size={17}/> Add to cart</button></div>
       <details className="shop-product-details"><summary>Ways to enjoy</summary><p>{servingIdea(product.variety)}</p><small>Pack options: {product.formats.map(f => f.grams + ' g').join(' · ')}</small></details>
+      <NutritionDetails variety={product.variety}/>
     </div></article>;
 }
 export default function Shop() {
@@ -116,6 +118,7 @@ export default function Shop() {
       <div className="shop-results"><span role="status">Showing {visibleProducts.length} of {products.length} greens</span><button onClick={resetFilters}>Reset filters</button></div>
       {visibleProducts.length ? <div className="shop-product-grid">{visibleProducts.map(p => <ProductCard key={p.id} product={p} add={add} favorite={favorites.includes(p.id)} toggleFavorite={() => toggleFavorite(p.id)}/>)}</div> : <section className="shop-empty"><Search size={32}/><h2>No greens match just yet.</h2><p>Try another search or clear your filters.</p><button className="shop-secondary" onClick={resetFilters}>Show all greens</button></section>}
       <p className="shop-photo-credit">Representative microgreens photography by <a href="https://www.pexels.com/photo/fresh-sprouts-of-microgreens-8543293/" target="_blank" rel="noopener noreferrer">Mikhail Nilov</a>, <a href="https://www.pexels.com/photo/sweet-pea-on-white-background-9031150/" target="_blank" rel="noopener noreferrer">Oks Malkova</a> and <a href="https://www.pexels.com/photo/12966802/" target="_blank" rel="noopener noreferrer">Marek Piwnicki</a> on Pexels. Actual harvest appearance may vary.</p></section><section className="shop-bottom-banner"><Leaf size={35}/><div><h2>A fresh finish to an everyday meal.</h2><p>Top a toast. Brighten a bowl. Make your plate your own.</p></div><a href="/shop/checkout">View your bag <ArrowRight size={18}/></a></section></>}
+    {!checkout && !token && <NutritionGuide/>}
     {!checkout && !token && <section className="shop-help"><div><p className="shop-eyebrow">GOOD TO KNOW</p><h2>A simple way <br/>to shop local.</h2><p>Choose your greens. Pick your pack.<br/>We’ll help with the rest.</p><span><ShieldCheck size={19}/> Payment verified by the farm</span></div><div className="shop-faq"><details><summary>Where do you deliver?</summary><p>We currently accept Coimbatore addresses with a 641xxx pincode. Choose your preferred delivery date at checkout; the farm will coordinate the final timing.</p></details><details><summary>How do I pay for my order?</summary><p>After checkout, open the farm’s Razorpay link. UPI and a payment QR are also shown when configured. Submit your transaction reference on your private order page for the farm to verify.</p></details><details><summary>Do I need to create an account?</summary><p>No. Shop as a guest and save your private order link to check the order and payment status. Your favourites are saved in this browser.</p></details></div></section>}
     </main><footer className="shop-footer"><a href="/shop"><Sprout size={23}/><b>{name}</b></a><span>Rooted in Coimbatore. Made for your table.</span><a href="/">Farm admin <ArrowUpRight size={14}/></a></footer></div>;
 }
