@@ -3,12 +3,20 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { ArrowRight, ArrowUpRight, Check, ChevronLeft, Leaf, Minus, Plus, ShoppingBag, Sprout, Truck, X, RefreshCw, ShieldCheck } from 'lucide-react';
 import './shop.css';
 import { NutritionDetails, NutritionGuide } from './ShopNutrition';
-import { productPhoto, taste, servingIdea } from './shopProducts';
+import { taste, servingIdea } from './shopProducts';
+import { productPhoto, productPhotos, photoUrl } from './productPhotos';
 import { Heart, Search } from 'lucide-react';
 function ProductPhoto({ variety, className = '', eager = false }: { variety: string; className?: string; eager?: boolean }) {
-  const [failed, setFailed] = useState(false); const src = productPhoto(variety);
-  return failed ? <div className={'shop-photo-fallback ' + className}><Sprout/><span>Photo unavailable</span></div> : <img className={className} src={src + '?auto=compress&cs=tinysrgb&w=1200'} alt="Fresh microgreens — representative photo" loading={eager ? 'eager' : 'lazy'} decoding="async" onError={() => setFailed(true)}/>;
+  const [failedSource, setFailedSource] = useState('');
+  const photo = productPhoto(variety);
+  if (!photo || failedSource === photo.url) return <div className={'shop-photo-fallback ' + className} role="img" aria-label={variety + ': photo unavailable'}><Sprout/><span>Photo coming soon</span></div>;
+  const responsive = new URL(photo.url).hostname === 'cdn.shopify.com';
+  return <img className={className} src={photoUrl(photo, 1200)}
+    srcSet={responsive ? [320, 640, 1000].map(width => photoUrl(photo, width) + ' ' + width + 'w').join(', ') : undefined}
+    sizes={className.includes('shop-bag-photo') ? '80px' : '(max-width: 600px) 50vw, (max-width: 1000px) 45vw, 400px'}
+    alt={variety + ' microgreens — representative photograph'} loading={eager ? 'eager' : 'lazy'} decoding="async" onError={() => setFailedSource(photo.url)}/>;
 }
+
 type Product = { id: string; name: string; variety: string; availableGrams: number; formats: { grams: number; pricePaise: number }[] };
 type CartItem = { productId: string; packGrams: number; quantity: number };
 const money = (n: number) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 2 }).format(n / 100);
@@ -117,7 +125,7 @@ export default function Shop() {
       <div className="shop-filter-row"><div className="shop-taste-filters" role="group" aria-label="Filter by taste">{['All','Mild & sweet','Peppery','Aromatic','Earthy'].map(t => <button key={t} className={tasteFilter === t ? 'active' : ''} aria-pressed={tasteFilter === t} onClick={() => setTasteFilter(t)}>{t}</button>)}</div><label><input type="checkbox" checked={availableOnly} onChange={e => setAvailableOnly(e.target.checked)}/> In stock</label><button className={'shop-saved-filter ' + (savedOnly ? 'active' : '')} aria-pressed={savedOnly} onClick={() => setSavedOnly(!savedOnly)}><Heart size={16}/> Saved ({favorites.length})</button></div>
       <div className="shop-results"><span role="status">Showing {visibleProducts.length} of {products.length} greens</span><button onClick={resetFilters}>Reset filters</button></div>
       {visibleProducts.length ? <div className="shop-product-grid">{visibleProducts.map(p => <ProductCard key={p.id} product={p} add={add} favorite={favorites.includes(p.id)} toggleFavorite={() => toggleFavorite(p.id)}/>)}</div> : <section className="shop-empty"><Search size={32}/><h2>No greens match just yet.</h2><p>Try another search or clear your filters.</p><button className="shop-secondary" onClick={resetFilters}>Show all greens</button></section>}
-      <p className="shop-photo-credit">Representative microgreens photography by <a href="https://www.pexels.com/photo/fresh-sprouts-of-microgreens-8543293/" target="_blank" rel="noopener noreferrer">Mikhail Nilov</a>, <a href="https://www.pexels.com/photo/sweet-pea-on-white-background-9031150/" target="_blank" rel="noopener noreferrer">Oks Malkova</a> and <a href="https://www.pexels.com/photo/12966802/" target="_blank" rel="noopener noreferrer">Marek Piwnicki</a> on Pexels. Actual harvest appearance may vary.</p></section><section className="shop-bottom-banner"><Leaf size={35}/><div><h2>A fresh finish to an everyday meal.</h2><p>Top a toast. Brighten a bowl. Make your plate your own.</p></div><a href="/shop/checkout">View your bag <ArrowRight size={18}/></a></section></>}
+      <details className="shop-photo-credit"><summary>About our microgreen photos</summary><p>Each variety has its own representative photograph. Actual harvest appearance and packaging may vary.</p><ul>{Object.entries(productPhotos).map(([variety, photo]) => <li key={variety}><a href={photo.source} target="_blank" rel="noopener noreferrer">{variety}</a> · {photo.credit}</li>)}</ul></details></section><section className="shop-bottom-banner"><Leaf size={35}/><div><h2>A fresh finish to an everyday meal.</h2><p>Top a toast. Brighten a bowl. Make your plate your own.</p></div><a href="/shop/checkout">View your bag <ArrowRight size={18}/></a></section></>}
     {!checkout && !token && <NutritionGuide/>}
     {!checkout && !token && <section className="shop-help"><div><p className="shop-eyebrow">GOOD TO KNOW</p><h2>A simple way <br/>to shop local.</h2><p>Choose your greens. Pick your pack.<br/>We’ll help with the rest.</p><span><ShieldCheck size={19}/> Payment verified by the farm</span></div><div className="shop-faq"><details><summary>Where do you deliver?</summary><p>We currently accept Coimbatore addresses with a 641xxx pincode. Choose your preferred delivery date at checkout; the farm will coordinate the final timing.</p></details><details><summary>How do I pay for my order?</summary><p>After checkout, open the farm’s Razorpay link. UPI and a payment QR are also shown when configured. Submit your transaction reference on your private order page for the farm to verify.</p></details><details><summary>Do I need to create an account?</summary><p>No. Shop as a guest and save your private order link to check the order and payment status. Your favourites are saved in this browser.</p></details></div></section>}
     </main><footer className="shop-footer"><a href="/shop"><Sprout size={23}/><b>{name}</b></a><span>Rooted in Coimbatore. Made for your table.</span><a href="/">Farm admin <ArrowUpRight size={14}/></a></footer></div>;
