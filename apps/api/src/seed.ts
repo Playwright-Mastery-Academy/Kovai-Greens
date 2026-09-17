@@ -616,7 +616,7 @@ export async function seedSampleData(
     },
     {
       maxWait: 20000,
-      timeout: 120000,
+      timeout: 600000, // Explicit atomic import may cross a high-latency database connection.
       isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
     },
   );
