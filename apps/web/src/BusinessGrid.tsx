@@ -1,10 +1,13 @@
 import { AgGridReact } from "ag-grid-react";
 import {
   ModuleRegistry,
+  setupAgTestIds,
   AllCommunityModule,
   themeQuartz,
 } from "ag-grid-community";
 ModuleRegistry.registerModules([AllCommunityModule]);
+// Expose AG Grid row, cell, header and filter locators in every environment.
+setupAgTestIds({ testIdAttribute: "data-testid" });
 const gridTheme = themeQuartz.withParams({
   accentColor: "#25634d",
   backgroundColor: "#ffffff",

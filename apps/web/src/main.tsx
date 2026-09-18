@@ -138,7 +138,7 @@ function IconButton({
   children: React.ReactNode;
 }) {
   return (
-    <button
+    <button data-testid={`icon-button-${label.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`}
       className="icon-button"
       aria-label={label}
       title={label}
@@ -150,7 +150,7 @@ function IconButton({
 }
 function Badge({ value }: { value: string }) {
   return (
-    <span className={"badge " + (value || "").toLowerCase()}>
+    <span data-testid="badge-span" className={"badge " + (value || "").toLowerCase()}>
       {title(value || "—")}
     </span>
   );
@@ -172,16 +172,16 @@ function Modal({
     return () => ref.current?.close();
   }, []);
   return (
-    <dialog
+    <dialog data-testid="modal-dialog"
       ref={ref}
       className={wide ? "modal wide" : "modal"}
       onCancel={onClose}
       aria-label={heading}
     >
-      <header>
-        <h2>{heading}</h2>
+      <header data-testid="modal-header">
+        <h2 data-testid="modal-h2">{heading}</h2>
         <IconButton label="Close dialog" onClick={onClose}>
-          <X size={20} />
+          <X data-testid="modal-x" size={20} />
         </IconButton>
       </header>
       {children}
@@ -198,12 +198,12 @@ function Empty({
   icon?: any;
 }) {
   return (
-    <div className="empty">
-      <div className="empty-icon">
+    <div data-testid="empty-empty-div" className="empty">
+      <div data-testid="empty-empty-icon-div" className="empty-icon">
         <Icon size={26} />
       </div>
-      <h3>{heading}</h3>
-      <p>{children}</p>
+      <h3 data-testid="empty-h3">{heading}</h3>
+      <p data-testid="empty-p">{children}</p>
     </div>
   );
 }
@@ -335,17 +335,17 @@ function App() {
     "Overview";
   if (!authReady)
     return (
-      <main className="login-page">
-        <LoaderCircle className="spin" aria-label="Loading" />
+      <main data-testid="app-login-page-main" className="login-page">
+        <LoaderCircle data-testid="app-loading-loader-circle" className="spin" aria-label="Loading" />
       </main>
     );
   if (!user)
     return (
-      <main className="login-page">
-        <div className="login-brand">
-          <Sprout size={38} />
-          <h1>Kovai Greens</h1>
-          <p>Fresh growth. Clear operations.</p>
+      <main data-testid="app-login-page-main-2" className="login-page">
+        <div data-testid="app-login-brand-div" className="login-brand">
+          <Sprout data-testid="app-sprout" size={38} />
+          <h1 data-testid="app-kovai-greens-h1">Kovai Greens</h1>
+          <p data-testid="app-fresh-growth-clear-operations-p">Fresh growth. Clear operations.</p>
         </div>
         <Connect
           onClose={() => {}}
@@ -371,35 +371,35 @@ function App() {
         },
       }}
     >
-      <div className="app">
-        <aside className={menu ? "sidebar open" : "sidebar"}>
-          <Link to="/" className="brand">
-            <span className="brand-icon">
-              <Sprout size={26} />
+      <div data-testid="app-app-div" className="app">
+        <aside data-testid="app-aside" className={menu ? "sidebar open" : "sidebar"}>
+          <Link data-testid="app--link" to="/" className="brand">
+            <span data-testid="app-brand-icon-span" className="brand-icon">
+              <Sprout data-testid="app-sprout-2" size={26} />
             </span>
-            <span>
-              Kovai<span className="brand-light">Greens</span>
-              <small>FARM OPERATIONS</small>
+            <span data-testid="app-kovai-span">
+              Kovai<span data-testid="app-brand-light-span" className="brand-light">Greens</span>
+              <small data-testid="app-farm-operations-small">FARM OPERATIONS</small>
             </span>
           </Link>
-          <div className="farm">
-            <span className="farm-avatar">KG</span>
-            <span>
-              <b>Coimbatore farm</b>
-              <small>
-                <MapPin size={11} /> Tamil Nadu, India
+          <div data-testid="app-farm-div" className="farm">
+            <span data-testid="app-farm-avatar-span" className="farm-avatar">KG</span>
+            <span data-testid="app-span">
+              <b data-testid="app-coimbatore-farm-b">Coimbatore farm</b>
+              <small data-testid="app-tamil-nadu-india-small">
+                <MapPin data-testid="app-map-pin" size={11} /> Tamil Nadu, India
               </small>
             </span>
-            <ChevronDown size={14} />
+            <ChevronDown data-testid="app-chevron-down" size={14} />
           </div>
-          <nav>
+          <nav data-testid="app-nav">
             {groups.map((g) => (
-              <div className="nav-group" key={g.name}>
-                <p>{g.name}</p>
+              <div data-testid={"app-nav-group-div" + "-" + String(g.name)} className="nav-group" key={g.name}>
+                <p data-testid={"app-p" + "-" + String(g.name)}>{g.name}</p>
                 {g.items
                   .filter(([p]) => allowed(p as string))
                   .map(([p, label, Icon]: any) => (
-                    <NavLink
+                    <NavLink data-testid={"app-nav-link" + "-" + String(p) + "-" + String(g.name)}
                       key={p}
                       to={p === "dashboard" ? "/" : "/" + p}
                       className={({ isActive }) =>
@@ -408,23 +408,23 @@ function App() {
                       end
                     >
                       <Icon size={18} />
-                      <span>{label}</span>
+                      <span data-testid={"app-span-2" + "-" + String(p) + "-" + String(g.name)}>{label}</span>
                       {p === "planning" && (
-                        <span className="nav-tag">PLAN</span>
+                        <span data-testid={"app-nav-tag-span" + "-" + String(p) + "-" + String(g.name)} className="nav-tag">PLAN</span>
                       )}
                     </NavLink>
                   ))}
               </div>
             ))}
           </nav>
-          <div className="sidebar-bottom">
+          <div data-testid="app-sidebar-bottom-div" className="sidebar-bottom">
             {allowed("settings") && (
-              <NavLink className="nav-link" to="/settings">
-                <Settings size={18} />
+              <NavLink data-testid="app-settings-nav-link" className="nav-link" to="/settings">
+                <Settings data-testid="app-settings" size={18} />
                 Settings
               </NavLink>
             )}
-            <button
+            <button data-testid="app-profile-button"
               className="profile"
               onClick={() =>
                 user
@@ -436,43 +436,43 @@ function App() {
                   : setConnecting(true)
               }
             >
-              <span className="avatar">
+              <span data-testid="app-avatar-span" className="avatar">
                 {user ? user.name.slice(0, 2).toUpperCase() : "KG"}
               </span>
-              <span>
-                <b>{user?.name || "Your farm workspace"}</b>
-                <small>
+              <span data-testid="app-span-3">
+                <b data-testid="app-b">{user?.name || "Your farm workspace"}</b>
+                <small data-testid="app-small">
                   {user ? title(user.role) : "Sign in to get started"}
                 </small>
               </span>
-              {user ? <LogOut size={16} /> : <ArrowRight size={16} />}
+              {user ? <LogOut data-testid="app-log-out" size={16} /> : <ArrowRight data-testid="app-arrow-right" size={16} />}
             </button>
           </div>
         </aside>
         {menu && (
-          <button
+          <button data-testid="app-close-navigation-button"
             className="scrim"
             aria-label="Close navigation"
             onClick={() => setMenu(false)}
           />
         )}
-        <div className="workspace">
-          <header className="topbar">
-            <div className="breadcrumbs">
+        <div data-testid="app-workspace-div" className="workspace">
+          <header data-testid="app-topbar-header" className="topbar">
+            <div data-testid="app-breadcrumbs-div" className="breadcrumbs">
               <IconButton label="Open navigation" onClick={() => setMenu(true)}>
-                <Menu size={20} />
+                <Menu data-testid="app-menu" size={20} />
               </IconButton>
-              <span>Workspace</span>
-              <ChevronRight size={14} />
-              <b>{current}</b>
+              <span data-testid="app-workspace-span">Workspace</span>
+              <ChevronRight data-testid="app-chevron-right" size={14} />
+              <b data-testid="app-b-2">{current}</b>
             </div>
-            <div className="top-right">
-              <a href="/shop" className="button secondary">Customer store ↗</a>
-              <span className="location">
-                <MapPin size={14} /> Coimbatore
+            <div data-testid="app-top-right-div" className="top-right">
+              <a data-testid="app-button-a" href="/shop" className="button secondary">Customer store ↗</a>
+              <span data-testid="app-location-span" className="location">
+                <MapPin data-testid="app-map-pin-2" size={14} /> Coimbatore
               </span>
-              <span className="environment">{user ? "Business workspace" : "Setup required"}</span>
-              <button
+              <span data-testid="app-environment-span" className="environment">{user ? "Business workspace" : "Setup required"}</span>
+              <button data-testid="app-account-and-password-button"
                 className="avatar small"
                 aria-label="Account and password"
                 onClick={() =>
@@ -483,16 +483,16 @@ function App() {
               </button>
             </div>
           </header>
-          <main>
+          <main data-testid="app-main">
             {!user && (
-              <div className="connection-banner">
-                <span>
-                  <Link2 size={17} />
-                  <b>Your farm workspace.</b> Sign in to your business API to
+              <div data-testid="app-connection-banner-div" className="connection-banner">
+                <span data-testid="app-sign-in-to-your-business-api-to-load-farm-records-span">
+                  <Link2 data-testid="app-link2" size={17} />
+                  <b data-testid="app-your-farm-workspace-b">Your farm workspace.</b> Sign in to your business API to
                   load farm records.
                 </span>
-                <button onClick={() => setConnecting(true)}>
-                  Sign in <ArrowRight size={15} />
+                <button data-testid="app-sign-in-button" onClick={() => setConnecting(true)}>
+                  Sign in <ArrowRight data-testid="app-arrow-right-2" size={15} />
                 </button>
               </div>
             )}
@@ -516,35 +516,35 @@ function App() {
                   path="*"
                   element={
                     <Empty heading="Page not found">
-                      <Link to="/">Return to overview</Link>
+                      <Link data-testid="app--link-2" to="/">Return to overview</Link>
                     </Empty>
                   }
                 />
               </Routes>
             ) : (
               <Empty heading="This page is outside your role">
-                <Link to={"/" + (rolePages[user!.role]?.[0] || "dashboard")}>
+                <Link data-testid="app-open-your-workspace-link" to={"/" + (rolePages[user!.role]?.[0] || "dashboard")}>
                   Open your workspace
                 </Link>
               </Empty>
             )}
-            <footer className="page-footer">
-              <span>
-                <Sprout size={13} /> From seed to doorstep.
+            <footer data-testid="app-page-footer-footer" className="page-footer">
+              <span data-testid="app-from-seed-to-doorstep-span">
+                <Sprout data-testid="app-sprout-3" size={13} /> From seed to doorstep.
               </span>
-              <span>Weights in grams · Currency INR · Asia/Kolkata</span>
+              <span data-testid="app-weights-in-grams-currency-inr-asia-kolkata-span">Weights in grams · Currency INR · Asia/Kolkata</span>
             </footer>
           </main>
         </div>
         {toast && (
-          <div className="toast" role="status">
-            <CheckCircle2 size={18} />
+          <div data-testid="app-toast-div" className="toast" role="status">
+            <CheckCircle2 data-testid="app-check-circle2" size={18} />
             {toast}
             <IconButton
               label="Dismiss notification"
               onClick={() => setToast("")}
             >
-              <X size={14} />
+              <X data-testid="app-x" size={14} />
             </IconButton>
           </div>
         )}
@@ -574,7 +574,7 @@ function AccountDialog({ onClose }: { onClose: () => void }) {
     [busy, setBusy] = useState(false);
   return (
     <Modal title="Your account" onClose={onClose}>
-      <form
+      <form data-testid="account-dialog-form"
         onSubmit={async (e) => {
           e.preventDefault();
           if (newPassword !== confirmPassword)
@@ -596,13 +596,13 @@ function AccountDialog({ onClose }: { onClose: () => void }) {
           }
         }}
       >
-        <p className="form-intro">
+        <p data-testid="account-dialog-form-intro-p" className="form-intro">
           {user?.name} · {title(user?.role)}. Changing your password signs out
           other sessions.
         </p>
-        <label>
+        <label data-testid="account-dialog-current-password-label">
           Current password
-          <input
+          <input data-testid="account-dialog-current-password-input"
             type="password"
             autoComplete="current-password"
             required
@@ -610,9 +610,9 @@ function AccountDialog({ onClose }: { onClose: () => void }) {
             onChange={(e) => setCurrentPassword(e.target.value)}
           />
         </label>
-        <label>
+        <label data-testid="account-dialog-new-password-label">
           New password
-          <input
+          <input data-testid="account-dialog-new-password-input"
             type="password"
             autoComplete="new-password"
             required
@@ -620,11 +620,11 @@ function AccountDialog({ onClose }: { onClose: () => void }) {
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
           />
-          <small>Use at least 12 characters.</small>
+          <small data-testid="account-dialog-use-at-least-12-characters-small">Use at least 12 characters.</small>
         </label>
-        <label>
+        <label data-testid="account-dialog-confirm-new-password-label">
           Confirm new password
-          <input
+          <input data-testid="account-dialog-confirm-password-input"
             type="password"
             autoComplete="new-password"
             required
@@ -634,12 +634,12 @@ function AccountDialog({ onClose }: { onClose: () => void }) {
           />
         </label>
         {error && (
-          <p className="error" role="alert">
+          <p data-testid="account-dialog-error-p" className="error" role="alert">
             {error}
           </p>
         )}
-        <div className="dialog-footer">
-          <button
+        <div data-testid="account-dialog-dialog-footer-div" className="dialog-footer">
+          <button data-testid="account-dialog-button-button"
             type="button"
             className="button"
             onClick={async () => {
@@ -650,7 +650,7 @@ function AccountDialog({ onClose }: { onClose: () => void }) {
           >
             Sign out
           </button>
-          <button className="button primary" disabled={busy}>
+          <button data-testid="account-dialog-button-button-2" className="button primary" disabled={busy}>
             Update password
           </button>
         </div>
@@ -673,7 +673,7 @@ function Connect({
     [busy, setBusy] = useState(false);
   const content = (
     <>
-      <form
+      <form data-testid="connect-form"
         onSubmit={async (e) => {
           e.preventDefault();
           setBusy(true);
@@ -692,12 +692,12 @@ function Connect({
           }
         }}
       >
-        <p className="form-intro">
+        <p data-testid="connect-form-intro-p" className="form-intro">
           Manage your farm, orders and deliveries in one place.
         </p>
-        <label>
+        <label data-testid="connect-username-label">
           Username
-          <input
+          <input data-testid="connect-username-input"
             type="text"
             required
             value={username}
@@ -706,9 +706,9 @@ function Connect({
             autoFocus
           />
         </label>
-        <label>
+        <label data-testid="connect-password-label">
           Password
-          <input
+          <input data-testid="connect-password-input"
             type="password"
             required
             value={password}
@@ -717,21 +717,21 @@ function Connect({
           />
         </label>
         {error && (
-          <p className="error" role="alert">
+          <p data-testid="connect-error-p" className="error" role="alert">
             {error}
           </p>
         )}
-        <div className="dialog-footer">
+        <div data-testid="connect-dialog-footer-div" className="dialog-footer">
           {!standalone && (
-            <button type="button" className="button" onClick={onClose}>
+            <button data-testid="connect-button-button" type="button" className="button" onClick={onClose}>
               Cancel
             </button>
           )}
-          <button className="button primary" disabled={busy}>
+          <button data-testid="connect-button-button-2" className="button primary" disabled={busy}>
             {busy ? (
-              <LoaderCircle className="spin" size={17} />
+              <LoaderCircle data-testid="connect-spin-loader-circle" className="spin" size={17} />
             ) : (
-              <Link2 size={17} />
+              <Link2 data-testid="connect-link2" size={17} />
             )}
             Sign in
           </button>
@@ -740,8 +740,8 @@ function Connect({
     </>
   );
   return standalone ? (
-    <section className="login-card">
-      <h2>Sign in</h2>
+    <section data-testid="connect-login-card-section" className="login-card">
+      <h2 data-testid="connect-sign-in-h2">Sign in</h2>
       {content}
     </section>
   ) : (
@@ -762,13 +762,13 @@ function PageHeading({
   children?: React.ReactNode;
 }) {
   return (
-    <div className="page-heading">
-      <div>
-        <p className="eyebrow">{eyebrow}</p>
-        <h1>{heading}</h1>
-        <p>{description}</p>
+    <div data-testid="page-heading-page-heading-div" className="page-heading">
+      <div data-testid="page-heading-div">
+        <p data-testid="page-heading-eyebrow-p" className="eyebrow">{eyebrow}</p>
+        <h1 data-testid="page-heading-h1">{heading}</h1>
+        <p data-testid="page-heading-p">{description}</p>
       </div>
-      <div className="heading-actions">{children}</div>
+      <div data-testid="page-heading-heading-actions-div" className="heading-actions">{children}</div>
     </div>
   );
 }
@@ -826,43 +826,43 @@ function Dashboard() {
         heading="Farm overview"
         description={today}
       >
-        <Link to="/planning" className="button">
-          <CalendarDays size={16} />
+        <Link data-testid="dashboard-planning-link" to="/planning" className="button">
+          <CalendarDays data-testid="dashboard-calendar-days" size={16} />
           Crop planning
         </Link>
-        <button
+        <button data-testid="dashboard-button-button"
           className="button primary"
           onClick={() =>
             user ? window.location.assign("/orders?new=1") : connect()
           }
         >
-          <Plus size={17} />
+          <Plus data-testid="dashboard-plus" size={17} />
           New order
         </button>
       </PageHeading>
-      <section className="farm-welcome"><div className="farm-welcome-copy"><span className="welcome-label"><Sprout size={15}/> ROOTED IN COIMBATORE</span><h2>A little care.<br/>A thriving farm.</h2><p>Welcome back{user?.name ? ', ' + user.name.split(' ')[0] : ''}. Here’s your farm, from the next harvest to the next doorstep.</p><div className="welcome-links"><Link to="/batches">View growing batches <ArrowUpRight size={15}/></Link><a href="/shop">Visit customer store <ArrowUpRight size={15}/></a></div></div><div className="farm-welcome-photo"><img src="https://images.pexels.com/photos/9031151/pexels-photo-9031151.jpeg?auto=compress&cs=tinysrgb&w=1000" alt="Representative sunflower microgreens"/><span><Leaf size={14}/> From seed to doorstep</span></div></section>
+      <section data-testid="dashboard-farm-welcome-section" className="farm-welcome"><div data-testid="dashboard-farm-welcome-copy-div" className="farm-welcome-copy"><span data-testid="dashboard-welcome-label-span" className="welcome-label"><Sprout data-testid="dashboard-sprout" size={15}/> ROOTED IN COIMBATORE</span><h2 data-testid="dashboard-a-little-care-a-thriving-farm-h2">A little care.<br data-testid="dashboard-br"/>A thriving farm.</h2><p data-testid="dashboard-welcome-back-here-s-your-farm-from-the-next-harvest-to-the-next-doorstep-p">Welcome back{user?.name ? ', ' + user.name.split(' ')[0] : ''}. Here’s your farm, from the next harvest to the next doorstep.</p><div data-testid="dashboard-welcome-links-div" className="welcome-links"><Link data-testid="dashboard-batches-link" to="/batches">View growing batches <ArrowUpRight data-testid="dashboard-arrow-up-right" size={15}/></Link><a data-testid="dashboard-visit-customer-store-a" href="/shop">Visit customer store <ArrowUpRight data-testid="dashboard-arrow-up-right-2" size={15}/></a></div></div><div data-testid="dashboard-farm-welcome-photo-div" className="farm-welcome-photo"><img data-testid="dashboard-img" src="https://images.pexels.com/photos/9031151/pexels-photo-9031151.jpeg?auto=compress&cs=tinysrgb&w=1000" alt="Representative sunflower microgreens"/><span data-testid="dashboard-from-seed-to-doorstep-span"><Leaf data-testid="dashboard-leaf" size={14}/> From seed to doorstep</span></div></section>
       {q.error && (
-        <div className="error">
+        <div data-testid="dashboard-error-div" className="error">
           {q.error.message}
-          <button onClick={() => q.refetch()}>Retry</button>
+          <button data-testid="dashboard-retry-button" onClick={() => q.refetch()}>Retry</button>
         </div>
       )}
-      <section className="metric-grid">
+      <section data-testid="dashboard-metric-grid-section" className="metric-grid">
         {metrics.map((m) => (
-          <Link className="metric" to={m.link} key={m.label}>
-            <div className="metric-top">
-              <span>{m.label}</span>
-              <m.icon size={19} />
+          <Link data-testid={"dashboard-metric-link" + "-" + String(m.label)} className="metric" to={m.link} key={m.label}>
+            <div data-testid={"dashboard-metric-top-div" + "-" + String(m.label)} className="metric-top">
+              <span data-testid={"dashboard-span" + "-" + String(m.label)}>{m.label}</span>
+              <m.icon data-testid={"dashboard-m-icon" + "-" + String(m.label)} size={19} />
             </div>
-            <strong>{q.isLoading ? "…" : (m.value ?? "—")}</strong>
-            <div className="metric-bottom">
-              <span>{m.detail}</span>
-              <ArrowUpRight size={16} />
+            <strong data-testid={"dashboard-strong" + "-" + String(m.label)}>{q.isLoading ? "…" : (m.value ?? "—")}</strong>
+            <div data-testid={"dashboard-metric-bottom-div" + "-" + String(m.label)} className="metric-bottom">
+              <span data-testid={"dashboard-span-2" + "-" + String(m.label)}>{m.detail}</span>
+              <ArrowUpRight data-testid={"dashboard-arrow-up-right-3" + "-" + String(m.label)} size={16} />
             </div>
           </Link>
         ))}
       </section>
-      <div className="operating-strip">
+      <div data-testid="dashboard-operating-strip-div" className="operating-strip">
         {[
           ["Today's receipts", d ? money(d.todayRevenue) : "—"],
           ["Low-stock varieties", d?.lowInventory?.length ?? "—"],
@@ -872,65 +872,65 @@ function Dashboard() {
             d?.upcomingSubscriptions?.length ?? "—",
           ],
         ].map(([label, value]) => (
-          <div key={String(label)}>
-            <span>{label}</span>
-            <b>{value}</b>
+          <div data-testid={"dashboard-div" + "-" + String(String(label))} key={String(label)}>
+            <span data-testid={"dashboard-span-3" + "-" + String(String(label))}>{label}</span>
+            <b data-testid={"dashboard-b" + "-" + String(String(label))}>{value}</b>
           </div>
         ))}
       </div>
       {!!d?.overdueBatches?.length && (
-        <div className="notice">
-          <AlertCircle size={18} />
-          <span>
+        <div data-testid="dashboard-notice-div" className="notice">
+          <AlertCircle data-testid="dashboard-alert-circle" size={18} />
+          <span data-testid="dashboard-growing-batches-are-past-their-expected-harvest-date-check-the-crop-before--span">
             {d.overdueBatches.length} growing batches are past their expected
             harvest date. Check the crop before promising supply.
           </span>
-          <Link className="text-link" to="/batches">
+          <Link data-testid="dashboard-batches-link-2" className="text-link" to="/batches">
             Review batches
           </Link>
         </div>
       )}
-      <div className="dashboard-main">
-        <section className="panel revenue">
-          <div className="panel-heading">
-            <div>
-              <h2>Revenue overview</h2>
-              <p>Collected payments, net of refunds</p>
+      <div data-testid="dashboard-dashboard-main-div" className="dashboard-main">
+        <section data-testid="dashboard-panel-section" className="panel revenue">
+          <div data-testid="dashboard-panel-heading-div" className="panel-heading">
+            <div data-testid="dashboard-div-2">
+              <h2 data-testid="dashboard-revenue-overview-h2">Revenue overview</h2>
+              <p data-testid="dashboard-collected-payments-net-of-refunds-p">Collected payments, net of refunds</p>
             </div>
-            <select
+            <select data-testid="dashboard-revenue-period-select"
               aria-label="Revenue period"
               value={period}
               onChange={(e) => setPeriod(e.target.value)}
             >
-              <option value="6">Last 6 months</option>
-              <option value="3">Last 3 months</option>
+              <option data-testid="dashboard-last-6-months-option" value="6">Last 6 months</option>
+              <option data-testid="dashboard-last-3-months-option" value="3">Last 3 months</option>
             </select>
           </div>
-          <div className="revenue-number">
+          <div data-testid="dashboard-revenue-number-div" className="revenue-number">
             {d ? money(d.monthlyRevenue) : "₹ —"}
-            <span>this month</span>
+            <span data-testid="dashboard-this-month-span">this month</span>
           </div>
           {d ? (
-            <div className="chart">
+            <div data-testid="dashboard-chart-div" className="chart">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart
                   data={d.monthly.slice(-Number(period))}
                   margin={{ left: 4, right: 15, top: 12, bottom: 0 }}
                 >
-                  <defs>
-                    <linearGradient
+                  <defs data-testid="dashboard-defs">
+                    <linearGradient data-testid="dashboard-revenue-fill-linear-gradient"
                       id="revenueFill"
                       x1="0"
                       y1="0"
                       x2="0"
                       y2="1"
                     >
-                      <stop
+                      <stop data-testid="dashboard-stop"
                         offset="0%"
                         stopColor="#4e8e6f"
                         stopOpacity={0.25}
                       />
-                      <stop offset="100%" stopColor="#4e8e6f" stopOpacity={0} />
+                      <stop data-testid="dashboard-stop-2" offset="100%" stopColor="#4e8e6f" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid
@@ -962,57 +962,57 @@ function Dashboard() {
               </ResponsiveContainer>
             </div>
           ) : (
-            <div className="chart-empty">
-              <div className="chart-grid" />
-              <span>
-                <BarChart3 size={22} />
+            <div data-testid="dashboard-chart-empty-div" className="chart-empty">
+              <div data-testid="dashboard-chart-grid-div" className="chart-grid" />
+              <span data-testid="dashboard-your-revenue-story-starts-with-your-first-payment-span">
+                <BarChart3 data-testid="dashboard-bar-chart3" size={22} />
                 Your revenue story starts with your first payment.
               </span>
-              <div className="chart-months">
+              <div data-testid="dashboard-chart-months-div" className="chart-months">
                 {Array.from({ length: 6 }, (_, i) => {
                   const d = new Date();
                   d.setMonth(d.getMonth() - 5 + i, 1);
                   return d.toLocaleString("en-IN", { month: "short" });
                 }).map((s) => (
-                  <span key={s}>{s}</span>
+                  <span data-testid={"dashboard-span-4" + "-" + String(s)} key={s}>{s}</span>
                 ))}
               </div>
             </div>
           )}
         </section>
-        <section className="panel attention">
-          <div className="panel-heading">
-            <div>
-              <h2>Farm priorities</h2>
-              <p>What needs your attention</p>
+        <section data-testid="dashboard-panel-section-2" className="panel attention">
+          <div data-testid="dashboard-panel-heading-div-2" className="panel-heading">
+            <div data-testid="dashboard-div-3">
+              <h2 data-testid="dashboard-farm-priorities-h2">Farm priorities</h2>
+              <p data-testid="dashboard-what-needs-your-attention-p">What needs your attention</p>
             </div>
-            <span className="subtle-icon">
-              <ClipboardList size={18} />
+            <span data-testid="dashboard-subtle-icon-span" className="subtle-icon">
+              <ClipboardList data-testid="dashboard-clipboard-list" size={18} />
             </span>
           </div>
-          <Link className="priority" to="/harvests">
-            <span className="priority-icon gold">
-              <Sun size={20} />
+          <Link data-testid="dashboard-harvests-link" className="priority" to="/harvests">
+            <span data-testid="dashboard-priority-icon-span" className="priority-icon gold">
+              <Sun data-testid="dashboard-sun" size={20} />
             </span>
-            <span>
-              <b>Harvest due today</b>
-              <small>
+            <span data-testid="dashboard-span-5">
+              <b data-testid="dashboard-harvest-due-today-b">Harvest due today</b>
+              <small data-testid="dashboard-small">
                 {d
                   ? `${d.harvestToday} batches scheduled`
                   : "Check your harvest schedule"}
               </small>
             </span>
-            <strong>{d?.harvestToday ?? "—"}</strong>
+            <strong data-testid="dashboard-strong-2">{d?.harvestToday ?? "—"}</strong>
           </Link>
-          <Link className="priority" to="/inventory">
-            <span className="priority-icon orange">
-              <Package size={20} />
+          <Link data-testid="dashboard-inventory-link" className="priority" to="/inventory">
+            <span data-testid="dashboard-priority-icon-span-2" className="priority-icon orange">
+              <Package data-testid="dashboard-package" size={20} />
             </span>
-            <span>
-              <b>Available stock</b>
-              <small>Unreserved, unpacked produce</small>
+            <span data-testid="dashboard-span-6">
+              <b data-testid="dashboard-available-stock-b">Available stock</b>
+              <small data-testid="dashboard-unreserved-unpacked-produce-small">Unreserved, unpacked produce</small>
             </span>
-            <strong>
+            <strong data-testid="dashboard-strong-3">
               {d
                 ? weight(
                     d.stock
@@ -1029,65 +1029,65 @@ function Dashboard() {
                 : "—"}
             </strong>
           </Link>
-          <Link className="priority" to="/payments">
-            <span className="priority-icon purple">
-              <Wallet size={20} />
+          <Link data-testid="dashboard-payments-link" className="priority" to="/payments">
+            <span data-testid="dashboard-priority-icon-span-3" className="priority-icon purple">
+              <Wallet data-testid="dashboard-wallet" size={20} />
             </span>
-            <span>
-              <b>Pending payments</b>
-              <small>Customer balances to collect</small>
+            <span data-testid="dashboard-span-7">
+              <b data-testid="dashboard-pending-payments-b">Pending payments</b>
+              <small data-testid="dashboard-customer-balances-to-collect-small">Customer balances to collect</small>
             </span>
-            <strong>{d ? money(d.pendingPayments) : "—"}</strong>
+            <strong data-testid="dashboard-strong-4">{d ? money(d.pendingPayments) : "—"}</strong>
           </Link>
-          <Link className="priority" to="/batches">
-            <span className="priority-icon green">
-              <Sprout size={20} />
+          <Link data-testid="dashboard-batches-link-3" className="priority" to="/batches">
+            <span data-testid="dashboard-priority-icon-span-4" className="priority-icon green">
+              <Sprout data-testid="dashboard-sprout-2" size={20} />
             </span>
-            <span>
-              <b>This week's harvest</b>
-              <small>Plan your team's work</small>
+            <span data-testid="dashboard-span-8">
+              <b data-testid="dashboard-this-week-s-harvest-b">This week's harvest</b>
+              <small data-testid="dashboard-plan-your-team-s-work-small">Plan your team's work</small>
             </span>
-            <strong>{d?.harvestWeek ?? "—"}</strong>
+            <strong data-testid="dashboard-strong-5">{d?.harvestWeek ?? "—"}</strong>
           </Link>
-          <Link to="/planning" className="text-link full">
-            Open production planner <ArrowRight size={16} />
+          <Link data-testid="dashboard-planning-link-2" to="/planning" className="text-link full">
+            Open production planner <ArrowRight data-testid="dashboard-arrow-right" size={16} />
           </Link>
         </section>
       </div>
-      <div className="dashboard-lower">
-        <section className="panel">
-          <div className="panel-heading">
-            <div>
-              <h2>Upcoming deliveries</h2>
-              <p>Orders scheduled for the next 7 days</p>
+      <div data-testid="dashboard-dashboard-lower-div" className="dashboard-lower">
+        <section data-testid="dashboard-panel-section-3" className="panel">
+          <div data-testid="dashboard-panel-heading-div-3" className="panel-heading">
+            <div data-testid="dashboard-div-4">
+              <h2 data-testid="dashboard-upcoming-deliveries-h2">Upcoming deliveries</h2>
+              <p data-testid="dashboard-orders-scheduled-for-the-next-7-days-p">Orders scheduled for the next 7 days</p>
             </div>
-            <Link className="text-link" to="/deliveries">
-              View all <ArrowUpRight size={15} />
+            <Link data-testid="dashboard-deliveries-link" className="text-link" to="/deliveries">
+              View all <ArrowUpRight data-testid="dashboard-arrow-up-right-4" size={15} />
             </Link>
           </div>
           {d?.orders?.length ? (
-            <div className="simple-table">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Customer</th>
-                    <th>Order</th>
-                    <th>Delivery</th>
-                    <th>Status</th>
+            <div data-testid="dashboard-simple-table-div" className="simple-table">
+              <table data-testid="dashboard-table">
+                <thead data-testid="dashboard-thead">
+                  <tr data-testid="dashboard-tr">
+                    <th data-testid="dashboard-customer-th">Customer</th>
+                    <th data-testid="dashboard-order-th">Order</th>
+                    <th data-testid="dashboard-delivery-th">Delivery</th>
+                    <th data-testid="dashboard-status-th">Status</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody data-testid="dashboard-tbody">
                   {d.orders.slice(0, 5).map((o: Row) => (
-                    <tr key={o.id}>
-                      <td>
-                        <b>{o.customer.name}</b>
-                        <small>
+                    <tr data-testid={"dashboard-tr-2" + "-" + String(o.id)} key={o.id}>
+                      <td data-testid={"dashboard-td" + "-" + String(o.id)}>
+                        <b data-testid={"dashboard-b-2" + "-" + String(o.id)}>{o.customer.name}</b>
+                        <small data-testid={"dashboard--small" + "-" + String(o.id)}>
                           {title(o.customer.type)} · {o.customer.area}
                         </small>
                       </td>
-                      <td>{o.number}</td>
-                      <td>{date(o.deliveryAt)}</td>
-                      <td>
+                      <td data-testid={"dashboard-td-2" + "-" + String(o.id)}>{o.number}</td>
+                      <td data-testid={"dashboard-td-3" + "-" + String(o.id)}>{date(o.deliveryAt)}</td>
+                      <td data-testid={"dashboard-td-4" + "-" + String(o.id)}>
                         <Badge value={o.status} />
                       </td>
                     </tr>
@@ -1102,24 +1102,24 @@ function Dashboard() {
             </Empty>
           )}
         </section>
-        <section className="panel harvest-card">
-          <div className="panel-heading">
-            <div>
-              <h2>Growing on your farm</h2>
-              <p>From sowing to harvest</p>
+        <section data-testid="dashboard-panel-section-4" className="panel harvest-card">
+          <div data-testid="dashboard-panel-heading-div-4" className="panel-heading">
+            <div data-testid="dashboard-div-5">
+              <h2 data-testid="dashboard-growing-on-your-farm-h2">Growing on your farm</h2>
+              <p data-testid="dashboard-from-sowing-to-harvest-p">From sowing to harvest</p>
             </div>
-            <Sprout size={20} />
+            <Sprout data-testid="dashboard-sprout-3" size={20} />
           </div>
           {d?.batches?.length ? (
-            <div className="batch-list">
+            <div data-testid="dashboard-batch-list-div" className="batch-list">
               {d.batches.slice(0, 3).map((b: Row) => (
-                <Link to="/batches" key={b.id}>
-                  <span className="crop-icon">
-                    <Leaf size={22} />
+                <Link data-testid={"dashboard-batches-link-4" + "-" + String(b.id)} to="/batches" key={b.id}>
+                  <span data-testid={"dashboard-crop-icon-span" + "-" + String(b.id)} className="crop-icon">
+                    <Leaf data-testid={"dashboard-leaf-2" + "-" + String(b.id)} size={22} />
                   </span>
-                  <span>
-                    <b>{b.product.name}</b>
-                    <small>
+                  <span data-testid={"dashboard-span-9" + "-" + String(b.id)}>
+                    <b data-testid={"dashboard-b-3" + "-" + String(b.id)}>{b.product.name}</b>
+                    <small data-testid={"dashboard-trays-small" + "-" + String(b.id)}>
                       {b.trays} trays · {date(b.harvestDueAt)}
                     </small>
                   </span>
@@ -1132,19 +1132,19 @@ function Dashboard() {
               Create your first growing batch to track its progress here.
             </Empty>
           )}
-          <Link className="text-link full" to="/batches">
-            Manage growing batches <ArrowRight size={16} />
+          <Link data-testid="dashboard-batches-link-5" className="text-link full" to="/batches">
+            Manage growing batches <ArrowRight data-testid="dashboard-arrow-right-2" size={16} />
           </Link>
         </section>
       </div>
-      <div className="quick-strip">
-        <span>
-          <ShieldCheck size={23} />
-          <b>Every harvest has a story.</b>
-          <span>Follow your produce from seed lot to customer.</span>
+      <div data-testid="dashboard-quick-strip-div" className="quick-strip">
+        <span data-testid="dashboard-span-10">
+          <ShieldCheck data-testid="dashboard-shield-check" size={23} />
+          <b data-testid="dashboard-every-harvest-has-a-story-b">Every harvest has a story.</b>
+          <span data-testid="dashboard-follow-your-produce-from-seed-lot-to-customer-span">Follow your produce from seed lot to customer.</span>
         </span>
-        <Link to="/traceability">
-          Explore traceability <ArrowRight size={16} />
+        <Link data-testid="dashboard-traceability-link" to="/traceability">
+          Explore traceability <ArrowRight data-testid="dashboard-arrow-right-3" size={16} />
         </Link>
       </div>
     </>
@@ -1282,10 +1282,10 @@ function RecordForm({
       onClose={onClose}
       wide
     >
-      <form onSubmit={form.handleSubmit(submit)}>
-        <div className="form-grid">
+      <form data-testid={"record-form-form" + "-" + String(resource)} onSubmit={form.handleSubmit(submit)}>
+        <div data-testid={"record-form-form-grid-div" + "-" + String(resource)} className="form-grid">
           {fs.map((f) => (
-            <label
+            <label data-testid={"record-form-label" + "-" + String(resource) + "-" + String(f.key)}
               key={f.key}
               className={
                 [
@@ -1299,18 +1299,18 @@ function RecordForm({
               }
             >
               {f.label}
-              {f.required && <em> *</em>}
+              {f.required && <em data-testid={"record-form--em" + "-" + String(resource) + "-" + String(f.key)}> *</em>}
               {f.type === "checkbox" ? (
-                <input
+                <input data-testid={"record-form-field" + "-" + String(resource) + "-" + String(f.key)}
                   className="form-checkbox"
                   type="checkbox"
                   {...form.register(f.key)}
                 />
               ) : f.type === "weekdays" ? (
-                <div className="weekday-picker">
+                <div data-testid={"record-form-weekday-picker-div" + "-" + String(resource) + "-" + String(f.key)} className="weekday-picker">
                   {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
                     (d, i) => (
-                      <button
+                      <button data-testid={"record-form-button" + "-" + String(resource) + "-" + String(d) + "-" + String(f.key)}
                         key={d}
                         type="button"
                         className={days.includes(i) ? "selected" : ""}
@@ -1331,22 +1331,22 @@ function RecordForm({
                   )}
                 </div>
               ) : f.type === "select" ? (
-                <select {...form.register(f.key)}>
-                  <option value="">Select {f.label.toLowerCase()}</option>
+                <select data-testid={"record-form-field" + "-" + String(resource) + "-" + String(f.key)} {...form.register(f.key)}>
+                  <option data-testid={"record-form-select-option" + "-" + String(resource) + "-" + String(f.key)} value="">Select {f.label.toLowerCase()}</option>
                   {f.options?.map((s) => (
-                    <option key={s} value={s}>
+                    <option data-testid={"record-form-option" + "-" + String(resource) + "-" + String(s) + "-" + String(f.key)} key={s} value={s}>
                       {title(s)}
                     </option>
                   ))}
                   {f.source &&
                     options[f.source]?.map((s: Row) => (
-                      <option key={s.id} value={s.id}>
+                      <option data-testid={"record-form-option-2" + "-" + String(resource) + "-" + String(s.id) + "-" + String(f.key)} key={s.id} value={s.id}>
                         {s.name || s.code || s.number || s.lotNumber}
                       </option>
                     ))}
                 </select>
               ) : (
-                <input
+                <input data-testid={"record-form-field" + "-" + String(resource) + "-" + String(f.key)}
                   {...form.register(f.key)}
                   type={f.type}
                   step={
@@ -1359,9 +1359,9 @@ function RecordForm({
                   min={f.type === "number" ? 0 : undefined}
                 />
               )}
-              <small>{f.help}</small>
+              <small data-testid={"record-form-small" + "-" + String(resource) + "-" + String(f.key)}>{f.help}</small>
               {form.formState.errors[f.key] && (
-                <span className="field-error">
+                <span data-testid={"record-form-field-error-span" + "-" + String(resource) + "-" + String(f.key)} className="field-error">
                   {String(form.formState.errors[f.key]?.message)}
                 </span>
               )}
@@ -1369,19 +1369,19 @@ function RecordForm({
           ))}
         </div>
         {(refs.error || products.error) && (
-          <p className="error">
+          <p data-testid={"record-form-error-p" + "-" + String(resource)} className="error">
             Could not load form options.{" "}
             {refs.error?.message || products.error?.message}
           </p>
         )}
         {resource === "products" && (
-          <div className="line-items">
-            <h3>Selling formats</h3>
+          <div data-testid={"record-form-line-items-div" + "-" + String(resource)} className="line-items">
+            <h3 data-testid={"record-form-selling-formats-h3" + "-" + String(resource)}>Selling formats</h3>
             {formats.map((f, i) => (
-              <div className="format-row" key={i}>
-                <label>
+              <div data-testid={"record-form-format-row-div" + "-" + String(resource) + "-" + String(i)} className="format-row" key={i}>
+                <label data-testid={"record-form-pack-weight-g-label" + "-" + String(resource) + "-" + String(i)}>
                   Pack weight (g)
-                  <input
+                  <input data-testid={"record-form-f-grams-input" + "-" + String(resource) + "-" + String(i)}
                     aria-label={`Format ${i + 1} grams`}
                     type="number"
                     min="1"
@@ -1396,9 +1396,9 @@ function RecordForm({
                     }
                   />
                 </label>
-                <label>
+                <label data-testid={"record-form-price-label" + "-" + String(resource) + "-" + String(i)}>
                   Price (₹)
-                  <input
+                  <input data-testid={"record-form-f-price-paise-input" + "-" + String(resource) + "-" + String(i)}
                     aria-label={`Format ${i + 1} price`}
                     type="number"
                     min="0"
@@ -1418,32 +1418,32 @@ function RecordForm({
                   label="Remove format"
                   onClick={() => setFormats(formats.filter((_, j) => i !== j))}
                 >
-                  <X size={16} />
+                  <X data-testid={"record-form-x" + "-" + String(resource) + "-" + String(i)} size={16} />
                 </IconButton>
               </div>
             ))}
-            <button
+            <button data-testid={"record-form-text-link-button" + "-" + String(resource)}
               type="button"
               className="text-link"
               onClick={() =>
                 setFormats([...formats, { grams: 250, pricePaise: 0 }])
               }
             >
-              <Plus size={15} />
+              <Plus data-testid={"record-form-plus" + "-" + String(resource)} size={15} />
               Add format
             </button>
           </div>
         )}
         {["orders", "schedules"].includes(resource) && (
-          <div className="line-items">
-            <h3>
+          <div data-testid={"record-form-line-items-div-2" + "-" + String(resource)} className="line-items">
+            <h3 data-testid={"record-form-h3" + "-" + String(resource)}>
               {resource === "orders" ? "Order items" : "Recurring products"}
             </h3>
             {items.map((item, i) => (
-              <div key={i} className="item-row">
-                <label>
+              <div data-testid={"record-form-item-row-div" + "-" + String(resource) + "-" + String(i)} key={i} className="item-row">
+                <label data-testid={"record-form-product-label" + "-" + String(resource) + "-" + String(i)}>
                   Product
-                  <select
+                  <select data-testid={"record-form-item-product-id-select" + "-" + String(resource) + "-" + String(i)}
                     required
                     value={item.productId}
                     onChange={(e) => {
@@ -1465,17 +1465,17 @@ function RecordForm({
                       );
                     }}
                   >
-                    <option value="">Select product</option>
+                    <option data-testid={"record-form-select-product-option" + "-" + String(resource) + "-" + String(i)} value="">Select product</option>
                     {options.products.map((p: Row) => (
-                      <option key={p.id} value={p.id}>
+                      <option data-testid={"record-form-option-3" + "-" + String(resource) + "-" + String(p.id) + "-" + String(i)} key={p.id} value={p.id}>
                         {p.name}
                       </option>
                     ))}
                   </select>
                 </label>
-                <label>
+                <label data-testid={"record-form-pack-g-label" + "-" + String(resource) + "-" + String(i)}>
                   Pack (g)
-                  <select
+                  <select data-testid={"record-form-item-pack-grams-select" + "-" + String(resource) + "-" + String(i)}
                     value={item.packGrams}
                     onChange={(e) => {
                       const fmt = options.products
@@ -1499,15 +1499,15 @@ function RecordForm({
                     {options.products
                       .find((p: Row) => p.id === item.productId)
                       ?.formats.map((f: Row) => (
-                        <option key={f.grams} value={f.grams}>
+                        <option data-testid={"record-form-g-option" + "-" + String(resource) + "-" + String(f.grams) + "-" + String(i)} key={f.grams} value={f.grams}>
                           {f.grams}g
                         </option>
                       ))}
                   </select>
                 </label>
-                <label>
+                <label data-testid={"record-form-packs-label" + "-" + String(resource) + "-" + String(i)}>
                   Packs
-                  <input
+                  <input data-testid={"record-form-item-quantity-input" + "-" + String(resource) + "-" + String(i)}
                     required
                     min="1"
                     type="number"
@@ -1521,9 +1521,9 @@ function RecordForm({
                     }
                   />
                 </label>
-                <label>
+                <label data-testid={"record-form-price-pack-label" + "-" + String(resource) + "-" + String(i)}>
                   Price / pack (₹)
-                  <input
+                  <input data-testid={"record-form-item-unit-price-paise-input" + "-" + String(resource) + "-" + String(i)}
                     type="number"
                     min="0"
                     step="0.01"
@@ -1544,12 +1544,12 @@ function RecordForm({
                   label="Remove order item"
                   onClick={() => setItems(items.filter((_, j) => j !== i))}
                 >
-                  <X size={16} />
+                  <X data-testid={"record-form-x-2" + "-" + String(resource) + "-" + String(i)} size={16} />
                 </IconButton>
               </div>
             ))}
-            <div className="spread">
-              <button
+            <div data-testid={"record-form-spread-div" + "-" + String(resource)} className="spread">
+              <button data-testid={"record-form-text-link-button-2" + "-" + String(resource)}
                 type="button"
                 className="text-link"
                 onClick={() =>
@@ -1564,10 +1564,10 @@ function RecordForm({
                   ])
                 }
               >
-                <Plus size={15} />
+                <Plus data-testid={"record-form-plus-2" + "-" + String(resource)} size={15} />
                 Add item
               </button>
-              <b>
+              <b data-testid={"record-form-subtotal-b" + "-" + String(resource)}>
                 Subtotal{" "}
                 {money(
                   items.reduce(
@@ -1580,22 +1580,22 @@ function RecordForm({
           </div>
         )}
         {error && (
-          <p role="alert" className="error">
+          <p data-testid={"record-form-error-p-2" + "-" + String(resource)} role="alert" className="error">
             {error}
           </p>
         )}
-        <div className="dialog-footer">
-          <button type="button" className="button" onClick={onClose}>
+        <div data-testid={"record-form-dialog-footer-div" + "-" + String(resource)} className="dialog-footer">
+          <button data-testid={"record-form-button-button" + "-" + String(resource)} type="button" className="button" onClick={onClose}>
             Cancel
           </button>
-          <button
+          <button data-testid={"record-form-button-button-2" + "-" + String(resource)}
             className="button primary"
             disabled={busy || !!refs.error || !!products.error}
           >
             {busy ? (
-              <LoaderCircle className="spin" size={16} />
+              <LoaderCircle data-testid={"record-form-spin-loader-circle" + "-" + String(resource)} className="spin" size={16} />
             ) : (
-              <Check size={16} />
+              <Check data-testid={"record-form-check" + "-" + String(resource)} size={16} />
             )}
             Save {singular[resource] || "record"}
           </button>
@@ -1720,7 +1720,7 @@ function Records({ resource: page }: { resource: string }) {
         heading={names[page]}
         description={descriptions[page]}
       >
-        <button
+        <button data-testid={"records-button-button" + "-" + String(resource)}
           className="button"
           disabled={!filtered.length}
           onClick={() =>
@@ -1734,43 +1734,43 @@ function Records({ resource: page }: { resource: string }) {
             )
           }
         >
-          <ArrowDownToLine size={16} />
+          <ArrowDownToLine data-testid={"records-arrow-down-to-line" + "-" + String(resource)} size={16} />
           Export this page
         </button>
         {canCreate && (
-          <button
+          <button data-testid={"records-button-button-2" + "-" + String(resource)}
             className="button primary"
             onClick={() => (user ? setForm(true) : connect())}
           >
-            <Plus size={17} />
+            <Plus data-testid={"records-plus" + "-" + String(resource)} size={17} />
             New {singular[page]}
           </button>
         )}
       </PageHeading>
       {resource === "seed-lots" && (
-        <div className="tabs">
-          <Link className="selected" to="/seed-lots">
+        <div data-testid={"records-tabs-div" + "-" + String(resource)} className="tabs">
+          <Link data-testid={"records-seed-lots-link" + "-" + String(resource)} className="selected" to="/seed-lots">
             Seed inventory
           </Link>
-          <Link to="/suppliers">Suppliers</Link>
+          <Link data-testid={"records-suppliers-link" + "-" + String(resource)} to="/suppliers">Suppliers</Link>
         </div>
       )}
       {resource === "inventory" && (
-        <div className="tabs">
-          <Link className="selected" to="/inventory">
+        <div data-testid={"records-tabs-div-2" + "-" + String(resource)} className="tabs">
+          <Link data-testid={"records-inventory-link" + "-" + String(resource)} className="selected" to="/inventory">
             Stock on hand
           </Link>
-          <Link to="/movements">Transaction history</Link>
+          <Link data-testid={"records-movements-link" + "-" + String(resource)} to="/movements">Transaction history</Link>
         </div>
       )}
       {resource === "schedules" && (
-        <div className="notice">
-          <Repeat size={18} />
-          <span>
+        <div data-testid={"records-notice-div" + "-" + String(resource)} className="notice">
+          <Repeat data-testid={"records-repeat" + "-" + String(resource)} size={18} />
+          <span data-testid={"records-generate-draft-orders-up-to-30-days-ahead-existing-schedule-dates-are-skipp-span" + "-" + String(resource)}>
             Generate draft orders up to 30 days ahead. Existing schedule dates
             are skipped.
           </span>
-          <button
+          <button data-testid={"records-text-link-button" + "-" + String(resource)}
             className="text-link"
             disabled={busy}
             onClick={async () => {
@@ -1792,52 +1792,52 @@ function Records({ resource: page }: { resource: string }) {
               }
             }}
           >
-            Generate orders <ArrowRight size={15} />
+            Generate orders <ArrowRight data-testid={"records-arrow-right" + "-" + String(resource)} size={15} />
           </button>
         </div>
       )}
       {resource === "payments" && (
-        <div className="tabs">
-          <Link className="selected" to="/payments">
+        <div data-testid={"records-tabs-div-3" + "-" + String(resource)} className="tabs">
+          <Link data-testid={"records-payments-link" + "-" + String(resource)} className="selected" to="/payments">
             Transactions
           </Link>
-          <Link to="/billing">Monthly statements</Link>
+          <Link data-testid={"records-billing-link" + "-" + String(resource)} to="/billing">Monthly statements</Link>
         </div>
       )}
       {resource === "packing" && (
-        <div className="notice">
-          <Box size={18} />
-          <span>
+        <div data-testid={"records-notice-div-2" + "-" + String(resource)} className="notice">
+          <Box data-testid={"records-box" + "-" + String(resource)} size={18} />
+          <span data-testid={"records-packing-records-are-created-when-an-order-moves-from-packing-to-packed-span" + "-" + String(resource)}>
             Packing records are created when an order moves from Packing to
             Packed.
           </span>
-          <Link className="text-link" to="/orders">
-            Open orders <ArrowRight size={15} />
+          <Link data-testid={"records-orders-link" + "-" + String(resource)} className="text-link" to="/orders">
+            Open orders <ArrowRight data-testid={"records-arrow-right-2" + "-" + String(resource)} size={15} />
           </Link>
         </div>
       )}
-      <section className="panel records-panel">
-        <div className="table-toolbar">
-          <div className="search-input">
-            <Search size={17} />
-            <input
+      <section data-testid={"records-panel-section" + "-" + String(resource)} className="panel records-panel">
+        <div data-testid={"records-table-toolbar-div" + "-" + String(resource)} className="table-toolbar">
+          <div data-testid={"records-search-input-div" + "-" + String(resource)} className="search-input">
+            <Search data-testid={"records-search" + "-" + String(resource)} size={17} />
+            <input data-testid={"records-search-input" + "-" + String(resource)}
               aria-label={`Search ${names[page]}`}
               placeholder={`Search ${names[page].toLowerCase()}…`}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-          <div className="table-controls">
-            <span>{q.data?.total ?? 0} records</span>
+          <div data-testid={"records-table-controls-div" + "-" + String(resource)} className="table-controls">
+            <span data-testid={"records-records-span" + "-" + String(resource)}>{q.data?.total ?? 0} records</span>
             {statuses.length > 0 && (
-              <select
+              <select data-testid={"records-filter-status-select" + "-" + String(resource)}
                 aria-label="Filter status"
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
               >
-                <option value="all">All statuses</option>
+                <option data-testid={"records-all-statuses-option" + "-" + String(resource)} value="all">All statuses</option>
                 {statuses.map((s) => (
-                  <option key={s}>{s}</option>
+                  <option data-testid={"records-option" + "-" + String(resource) + "-" + String(s)} key={s}>{s}</option>
                 ))}
               </select>
             )}
@@ -1845,7 +1845,7 @@ function Records({ resource: page }: { resource: string }) {
               label="Refresh records"
               onClick={() => (user ? q.refetch() : connect())}
             >
-              <RefreshCw size={16} />
+              <RefreshCw data-testid={"records-refresh-cw" + "-" + String(resource)} size={16} />
             </IconButton>
           </div>
         </div>
@@ -1854,7 +1854,7 @@ function Records({ resource: page }: { resource: string }) {
         ) : q.error ? (
           <Empty heading="Records could not be loaded" icon={AlertCircle}>
             {q.error.message}
-            <button className="button" onClick={() => q.refetch()}>
+            <button data-testid={"records-button-button-3" + "-" + String(resource)} className="button" onClick={() => q.refetch()}>
               Try again
             </button>
           </Empty>
@@ -1879,7 +1879,7 @@ function Records({ resource: page }: { resource: string }) {
                 : "Records appear automatically as your farm workflow progresses."
               : "Sign in to securely load your business records."}
             {
-              <button
+              <button data-testid={"records-button-button-4" + "-" + String(resource)}
                 className="button primary"
                 onClick={() =>
                   user
@@ -1894,14 +1894,15 @@ function Records({ resource: page }: { resource: string }) {
                     ? "Add " + singular[page]
                     : "Back to overview"
                   : "Sign in"}
-                <ArrowRight size={15} />
+                <ArrowRight data-testid={"records-arrow-right-3" + "-" + String(resource)} size={15} />
               </button>
             }
           </Empty>
         ) : (
-          <div className="grid-wrap">
+          <div data-testid={"records-grid-wrap-div" + "-" + String(resource)} className="grid-wrap">
             <React.Suspense fallback={<Empty heading="Loading table…" />}>
               <BusinessGrid
+                gridId={`records-${resource}`}
                 rowData={filtered}
                 columnDefs={cols as any}
                 defaultColDef={{
@@ -1920,40 +1921,40 @@ function Records({ resource: page }: { resource: string }) {
             </React.Suspense>
           </div>
         )}
-        <div className="table-bottom">
-          <ShieldCheck size={14} />
-          <span>
+        <div data-testid={"records-table-bottom-div" + "-" + String(resource)} className="table-bottom">
+          <ShieldCheck data-testid={"records-shield-check" + "-" + String(resource)} size={14} />
+          <span data-testid={"records-span" + "-" + String(resource)}>
             {resource === "inventory"
               ? "Stock changes are recorded in the inventory ledger."
               : "Select a row to view details and available actions."}
           </span>
-          <span>Column sorting and grid filters apply to this page.</span>
+          <span data-testid={"records-column-sorting-and-grid-filters-apply-to-this-page-span" + "-" + String(resource)}>Column sorting and grid filters apply to this page.</span>
         </div>
-        <div className="server-pagination">
-          <label>
+        <div data-testid={"records-server-pagination-div" + "-" + String(resource)} className="server-pagination">
+          <label data-testid={"records-rows-per-page-label" + "-" + String(resource)}>
             Rows per page
-            <select
+            <select data-testid={"records-page-size-select" + "-" + String(resource)}
               value={pageSize}
               onChange={(e) => setPageSize(Number(e.target.value))}
             >
-              <option value={20}>20</option>
-              <option value={50}>50</option>
-              <option value={100}>100</option>
+              <option data-testid={"records-20-option" + "-" + String(resource)} value={20}>20</option>
+              <option data-testid={"records-50-option" + "-" + String(resource)} value={50}>50</option>
+              <option data-testid={"records-100-option" + "-" + String(resource)} value={100}>100</option>
             </select>
           </label>
-          <span>
+          <span data-testid={"records-page-of-span" + "-" + String(resource)}>
             Page {pageIndex} of{" "}
             {Math.max(1, Math.ceil((q.data?.total || 0) / pageSize))}
           </span>
-          <button
+          <button data-testid={"records-button-button-5" + "-" + String(resource)}
             className="button"
             disabled={pageIndex === 1 || q.isFetching}
             onClick={() => setPageIndex((p) => p - 1)}
           >
-            <ChevronLeft size={16} />
+            <ChevronLeft data-testid={"records-chevron-left" + "-" + String(resource)} size={16} />
             Previous
           </button>
-          <button
+          <button data-testid={"records-button-button-6" + "-" + String(resource)}
             className="button"
             disabled={
               pageIndex * pageSize >= (q.data?.total || 0) || q.isFetching
@@ -1961,11 +1962,11 @@ function Records({ resource: page }: { resource: string }) {
             onClick={() => setPageIndex((p) => p + 1)}
           >
             Next
-            <ChevronRight size={16} />
+            <ChevronRight data-testid={"records-chevron-right" + "-" + String(resource)} size={16} />
           </button>
         </div>
       </section>
-      {error && !selected && <p className="error">{error}</p>}
+      {error && !selected && <p data-testid={"records-error-p" + "-" + String(resource)} className="error">{error}</p>}
       {form && (
         <RecordForm
           resource={resource}
@@ -1989,11 +1990,11 @@ function Records({ resource: page }: { resource: string }) {
           onClose={() => setSelected(null)}
           wide
         >
-          <div className="detail-summary">
+          <div data-testid={"records-detail-summary-div" + "-" + String(resource)} className="detail-summary">
             {cols.map((c) => (
-              <div key={c.headerName}>
-                <span>{c.headerName}</span>
-                <b>{String(c.valueGetter({ data: selected }) ?? "—")}</b>
+              <div data-testid={"records-div" + "-" + String(resource) + "-" + String(c.headerName)} key={c.headerName}>
+                <span data-testid={"records-span-2" + "-" + String(resource) + "-" + String(c.headerName)}>{c.headerName}</span>
+                <b data-testid={"records-b" + "-" + String(resource) + "-" + String(c.headerName)}>{String(c.valueGetter({ data: selected }) ?? "—")}</b>
               </div>
             ))}
           </div>
@@ -2002,31 +2003,31 @@ function Records({ resource: page }: { resource: string }) {
           )}
           {resource === "orders" && (
             <>
-              <h3>Order items</h3>
+              <h3 data-testid={"records-order-items-h3" + "-" + String(resource)}>Order items</h3>
               {selected.items.map((i: Row) => (
-                <div className="detail-line" key={i.id}>
-                  <span>
+                <div data-testid={"records-detail-line-div" + "-" + String(resource) + "-" + String(i.id)} className="detail-line" key={i.id}>
+                  <span data-testid={"records-g-span" + "-" + String(resource) + "-" + String(i.id)}>
                     {i.product.name} · {i.quantity} × {i.packGrams}g
                   </span>
-                  <b>{money(i.quantity * i.unitPricePaise)}</b>
+                  <b data-testid={"records-b-2" + "-" + String(resource) + "-" + String(i.id)}>{money(i.quantity * i.unitPricePaise)}</b>
                 </div>
               ))}
-              <div className="detail-line">
-                <span>Outstanding balance</span>
-                <b>{money(selected.totalPaise - selected.paidPaise)}</b>
+              <div data-testid={"records-detail-line-div-2" + "-" + String(resource)} className="detail-line">
+                <span data-testid={"records-outstanding-balance-span" + "-" + String(resource)}>Outstanding balance</span>
+                <b data-testid={"records-b-3" + "-" + String(resource)}>{money(selected.totalPaise - selected.paidPaise)}</b>
               </div>
               {user && ['OWNER','ADMIN','SALES'].includes(user.role) && <OrderPaymentConfirmation key={selected.id} order={selected} onSaved={() => { saved(); setSelected(null); }}/>}
 
-              <Link
+              <Link data-testid={"records-text-link-link" + "-" + String(resource)}
                 className="text-link"
                 to={"/traceability?id=" + selected.id}
               >
-                View batch traceability <ArrowRight size={15} />
+                View batch traceability <ArrowRight data-testid={"records-arrow-right-4" + "-" + String(resource)} size={15} />
               </Link>
             </>
           )}
           {resource === "audit" && (
-            <pre className="json-detail">
+            <pre data-testid={"records-json-detail-pre" + "-" + String(resource)} className="json-detail">
               {JSON.stringify(
                 { before: selected.oldValue, after: selected.newValue },
                 null,
@@ -2035,11 +2036,11 @@ function Records({ resource: page }: { resource: string }) {
             </pre>
           )}
           {resource === "payments" && (
-            <div className="tabs">
-              <Link className="selected" to="/payments">
+            <div data-testid={"records-tabs-div-4" + "-" + String(resource)} className="tabs">
+              <Link data-testid={"records-payments-link-2" + "-" + String(resource)} className="selected" to="/payments">
                 Transactions
               </Link>
-              <Link to="/billing">Monthly statements</Link>
+              <Link data-testid={"records-billing-link-2" + "-" + String(resource)} to="/billing">Monthly statements</Link>
             </div>
           )}
           {resource === "packing" && selected.status !== "CANCELLED" && (
@@ -2048,14 +2049,14 @@ function Records({ resource: page }: { resource: string }) {
           {resource === "deliveries" && (
             <DeliveryForm record={selected} onSubmit={mutate} busy={busy} />
           )}
-          <div className="action-row">
+          <div data-testid={"records-action-row-div" + "-" + String(resource)} className="action-row">
             {["products", "customers", "suppliers"].includes(resource) &&
               !(
                 resource === "products" &&
                 user &&
                 ["SALES", "FARM_WORKER"].includes(user.role)
               ) && (
-                <button
+                <button data-testid={"records-button-button-7" + "-" + String(resource)}
                   className="button"
                   onClick={() => {
                     setEditing(selected);
@@ -2075,7 +2076,7 @@ function Records({ resource: page }: { resource: string }) {
                   ["ALLOCATED", "PACKING", "PACKED"].includes(s),
               )
               .map((s) => (
-                <button
+                <button data-testid={"records-button" + "-" + String(resource) + "-" + String(s)}
                   key={s}
                   disabled={busy}
                   className={
@@ -2099,9 +2100,9 @@ function Records({ resource: page }: { resource: string }) {
             {resource === "users" &&
               user?.role === "OWNER" &&
               selected.id !== user.id && (
-                <label>
+                <label data-testid={"records-role-label" + "-" + String(resource)}>
                   Role
-                  <select
+                  <select data-testid={"records-selected-role-select" + "-" + String(resource)}
                     value={selected.role}
                     disabled={busy}
                     onChange={(e) => mutate({ role: e.target.value })}
@@ -2114,7 +2115,7 @@ function Records({ resource: page }: { resource: string }) {
                       "SALES",
                       "DELIVERY",
                     ].map((role) => (
-                      <option key={role} value={role}>
+                      <option data-testid={"records-option-2" + "-" + String(resource) + "-" + String(role)} key={role} value={role}>
                         {title(role)}
                       </option>
                     ))}
@@ -2124,7 +2125,7 @@ function Records({ resource: page }: { resource: string }) {
             {resource === "users" &&
               user?.role === "OWNER" &&
               selected.id !== user.id && (
-                <button
+                <button data-testid={"records-button-button-8" + "-" + String(resource)}
                   className="button danger"
                   onClick={() => mutate({ active: !selected.active })}
                 >
@@ -2133,26 +2134,26 @@ function Records({ resource: page }: { resource: string }) {
               )}
           </div>
           {error && (
-            <p role="alert" className="error">
+            <p data-testid={"records-error-p-2" + "-" + String(resource)} role="alert" className="error">
               {error}
             </p>
           )}
           {confirm && (
-            <div className="confirmation">
-              <b>
+            <div data-testid={"records-confirmation-div" + "-" + String(resource)} className="confirmation">
+              <b data-testid={"records-change-this-to-b" + "-" + String(resource)}>
                 Change this {singular[resource] || "record"} to {title(confirm)}
                 ?
               </b>
-              <p>
+              <p data-testid={"records-p" + "-" + String(resource)}>
                 {resource === "orders"
                   ? "This may reserve, release or move inventory. The change will be recorded."
                   : "This change will be recorded in the audit log."}
               </p>
-              <div className="action-row">
-                <button className="button" onClick={() => setConfirm(null)}>
+              <div data-testid={"records-action-row-div-2" + "-" + String(resource)} className="action-row">
+                <button data-testid={"records-button-button-9" + "-" + String(resource)} className="button" onClick={() => setConfirm(null)}>
                   Keep current status
                 </button>
-                <button
+                <button data-testid={"records-button-button-10" + "-" + String(resource)}
                   className="button primary"
                   disabled={busy}
                   onClick={() => mutate({ status: confirm })}
@@ -2173,18 +2174,18 @@ function RecordHistory({ resource, id }: { resource: string; id: string }) {
     queryFn: () => api("history/" + resource + "/" + id),
   });
   return (
-    <section className="record-history">
-      <h3>Timeline</h3>
+    <section data-testid={"record-history-record-history-section" + "-" + String(resource + "-" + id)} className="record-history">
+      <h3 data-testid={"record-history-timeline-h3" + "-" + String(resource + "-" + id)}>Timeline</h3>
       {q.error ? (
-        <p className="error">{q.error.message}</p>
+        <p data-testid={"record-history-error-p" + "-" + String(resource + "-" + id)} className="error">{q.error.message}</p>
       ) : (
         q.data?.map((r: Row) => (
-          <div key={r.id}>
-            <span className="timeline-mark" />
-            <p>
-              <b>{title(r.action)}</b>
+          <div data-testid={"record-history-div" + "-" + String(resource + "-" + id) + "-" + String(r.id)} key={r.id}>
+            <span data-testid={"record-history-timeline-mark-span" + "-" + String(resource + "-" + id) + "-" + String(r.id)} className="timeline-mark" />
+            <p data-testid={"record-history-p" + "-" + String(resource + "-" + id) + "-" + String(r.id)}>
+              <b data-testid={"record-history-b" + "-" + String(resource + "-" + id) + "-" + String(r.id)}>{title(r.action)}</b>
               {r.newValue?.status && <Badge value={r.newValue.status} />}
-              <small>
+              <small data-testid={"record-history--small" + "-" + String(resource + "-" + id) + "-" + String(r.id)}>
                 {new Date(r.createdAt).toLocaleString("en-IN", {
                   timeZone: "Asia/Kolkata",
                 })}{" "}
@@ -2205,46 +2206,46 @@ function PackingLabel({ id }: { id: string }) {
     enabled: opened,
   });
   return (
-    <div className="packing-label-container">
-      <button className="button" onClick={() => setOpened(true)}>
-        <ShieldCheck size={16} />
+    <div data-testid={"packing-label-packing-label-container-div" + "-" + String(id)} className="packing-label-container">
+      <button data-testid={"packing-label-button-button" + "-" + String(id)} className="button" onClick={() => setOpened(true)}>
+        <ShieldCheck data-testid={"packing-label-shield-check" + "-" + String(id)} size={16} />
         Show QR label
       </button>
-      {q.error && <p className="error">{q.error.message}</p>}
+      {q.error && <p data-testid={"packing-label-error-p" + "-" + String(id)} className="error">{q.error.message}</p>}
       {q.data && (
         <>
-          <div className="package-label" id="print-label">
-            <div>
-              <h2>{q.data.farm}</h2>
-              <h3>
+          <div data-testid={"packing-label-print-label-div" + "-" + String(id)} className="package-label" id="print-label">
+            <div data-testid={"packing-label-div" + "-" + String(id)}>
+              <h2 data-testid={"packing-label-h2" + "-" + String(id)}>{q.data.farm}</h2>
+              <h3 data-testid={"packing-label-g-h3" + "-" + String(id)}>
                 {q.data.product} · {q.data.packGrams}g
               </h3>
-              <p>Batch: {q.data.batch}</p>
-              <p>Harvested: {date(q.data.harvestedAt)}</p>
-              <p>Packed: {date(q.data.packedAt)}</p>
+              <p data-testid={"packing-label-batch-p" + "-" + String(id)}>Batch: {q.data.batch}</p>
+              <p data-testid={"packing-label-harvested-p" + "-" + String(id)}>Harvested: {date(q.data.harvestedAt)}</p>
+              <p data-testid={"packing-label-packed-p" + "-" + String(id)}>Packed: {date(q.data.packedAt)}</p>
               {q.data.bestBefore && (
-                <p>Best before: {date(q.data.bestBefore)}</p>
+                <p data-testid={"packing-label-best-before-p" + "-" + String(id)}>Best before: {date(q.data.bestBefore)}</p>
               )}
-              <p>{q.data.storageInstructions}</p>
-              <small>{q.data.address}</small>
+              <p data-testid={"packing-label-p" + "-" + String(id)}>{q.data.storageInstructions}</p>
+              <small data-testid={"packing-label-small" + "-" + String(id)}>{q.data.address}</small>
             </div>
-            <img
+            <img data-testid={"packing-label-img" + "-" + String(id)}
               width="128"
               height="128"
               src={q.data.qrDataUrl}
               alt="Scan for this package's harvest and farm information"
             />
           </div>
-          <div className="action-row">
-            <a
+          <div data-testid={"packing-label-action-row-div" + "-" + String(id)} className="action-row">
+            <a data-testid={"packing-label-button-a" + "-" + String(id)}
               className="button"
               href={q.data.traceUrl}
               target="_blank"
               rel="noreferrer"
             >
-              Public package page <ArrowUpRight size={16} />
+              Public package page <ArrowUpRight data-testid={"packing-label-arrow-up-right" + "-" + String(id)} size={16} />
             </a>
-            <button className="button primary" onClick={() => window.print()}>
+            <button data-testid={"packing-label-button-button-2" + "-" + String(id)} className="button primary" onClick={() => window.print()}>
               Print label
             </button>
           </div>
@@ -2277,41 +2278,41 @@ function DeliveryForm({
     [timeSlot, setTimeSlot] = useState(record.timeSlot || "");
   const users = useRows("delivery-drivers", user?.role !== "DELIVERY");
   return (
-    <div className="delivery-form">
-      <p>{record.address}</p>
+    <div data-testid={"delivery-form-delivery-form-div" + "-" + String(record.id)} className="delivery-form">
+      <p data-testid={"delivery-form-p" + "-" + String(record.id)}>{record.address}</p>
       {user?.role !== "DELIVERY" && (
-        <div className="form-grid">
-          <label>
+        <div data-testid={"delivery-form-form-grid-div" + "-" + String(record.id)} className="form-grid">
+          <label data-testid={"delivery-form-driver-optional-label" + "-" + String(record.id)}>
             Driver (optional)
             {users.data ? (
-              <select
+              <select data-testid={"delivery-form-driver-select" + "-" + String(record.id)}
                 value={driver}
                 onChange={(e) => setDriver(e.target.value)}
               >
-                <option value="">No driver assigned</option>
+                <option data-testid={"delivery-form-no-driver-assigned-option" + "-" + String(record.id)} value="">No driver assigned</option>
                 {users.data.data
                   .filter((u: Row) => !!u.id)
                   .map((u: Row) => (
-                    <option key={u.id} value={u.id}>
+                    <option data-testid={"delivery-form-option" + "-" + String(record.id) + "-" + String(u.id)} key={u.id} value={u.id}>
                       {u.name}
                     </option>
                   ))}
               </select>
             ) : (
-              <input
+              <input data-testid={"delivery-form-driver-user-id-input" + "-" + String(record.id)}
                 placeholder="Driver user ID"
                 value={driver}
                 onChange={(e) => setDriver(e.target.value)}
               />
             )}
           </label>
-          <label>
+          <label data-testid={"delivery-form-route-label" + "-" + String(record.id)}>
             Route
-            <input value={route} onChange={(e) => setRoute(e.target.value)} />
+            <input data-testid={"delivery-form-route-input" + "-" + String(record.id)} value={route} onChange={(e) => setRoute(e.target.value)} />
           </label>
-          <label>
+          <label data-testid={"delivery-form-vehicle-label" + "-" + String(record.id)}>
             Vehicle
-            <input
+            <input data-testid={"delivery-form-vehicle-input" + "-" + String(record.id)}
               value={vehicle}
               onChange={(e) => setVehicle(e.target.value)}
             />
@@ -2319,18 +2320,18 @@ function DeliveryForm({
         </div>
       )}
       {user?.role !== "DELIVERY" && (
-        <div className="form-grid">
-          <label>
+        <div data-testid={"delivery-form-form-grid-div-2" + "-" + String(record.id)} className="form-grid">
+          <label data-testid={"delivery-form-delivery-date-and-time-ist-label" + "-" + String(record.id)}>
             Delivery date and time (IST)
-            <input
+            <input data-testid={"delivery-form-delivery-at-input" + "-" + String(record.id)}
               type="datetime-local"
               value={deliveryAt}
               onChange={(e) => setDeliveryAt(e.target.value)}
             />
           </label>
-          <label>
+          <label data-testid={"delivery-form-delivery-time-slot-label" + "-" + String(record.id)}>
             Delivery time slot
-            <input
+            <input data-testid={"delivery-form-e-g-7-00-9-00-am-input" + "-" + String(record.id)}
               placeholder="e.g. 7:00–9:00 AM"
               value={timeSlot}
               onChange={(e) => setTimeSlot(e.target.value)}
@@ -2338,14 +2339,14 @@ function DeliveryForm({
           </label>
         </div>
       )}
-      <label>
+      <label data-testid={"delivery-form-delivery-notes-label" + "-" + String(record.id)}>
         Delivery notes
-        <input value={notes} onChange={(e) => setNotes(e.target.value)} />
+        <input data-testid={"delivery-form-notes-input" + "-" + String(record.id)} value={notes} onChange={(e) => setNotes(e.target.value)} />
       </label>
-      <div className="action-row">
+      <div data-testid={"delivery-form-action-row-div" + "-" + String(record.id)} className="action-row">
         {user?.role !== "DELIVERY" &&
           !["CANCELLED", "DELIVERED"].includes(record.status) && (
-            <button
+            <button data-testid={"delivery-form-button-button" + "-" + String(record.id)}
               className="button"
               disabled={busy || !deliveryAt}
               onClick={() =>
@@ -2362,7 +2363,7 @@ function DeliveryForm({
           )}
         {user?.role !== "DELIVERY" &&
           ["PENDING", "ASSIGNED", "RESCHEDULED"].includes(record.status) && (
-            <button
+            <button data-testid={"delivery-form-button-button-2" + "-" + String(record.id)}
               className="button primary"
               disabled={busy || !driver}
               onClick={() =>
@@ -2380,7 +2381,7 @@ function DeliveryForm({
             </button>
           )}
         {["OUT_FOR_DELIVERY", "FAILED"].includes(record.status) && (
-          <button
+          <button data-testid={"delivery-form-button-button-3" + "-" + String(record.id)}
             className="button primary"
             disabled={busy}
             onClick={() => onSubmit({ status: "DELIVERED", notes })}
@@ -2389,7 +2390,7 @@ function DeliveryForm({
           </button>
         )}
         {record.status === "OUT_FOR_DELIVERY" && (
-          <button
+          <button data-testid={"delivery-form-button-button-4" + "-" + String(record.id)}
             className="button danger"
             disabled={busy}
             onClick={() => onSubmit({ status: "FAILED", notes })}
@@ -2410,11 +2411,11 @@ function Discard({ record, onSaved }: { record: Row; onSaved: () => void }) {
   return (
     <>
       {!open ? (
-        <button className="button danger" onClick={() => setOpen(true)}>
+        <button data-testid={"discard-button-button" + "-" + String(record.id)} className="button danger" onClick={() => setOpen(true)}>
           Discard stock
         </button>
       ) : (
-        <form
+        <form data-testid={"discard-discard-form-form" + "-" + String(record.id)}
           className="discard-form"
           onSubmit={async (e) => {
             e.preventDefault();
@@ -2432,9 +2433,9 @@ function Discard({ record, onSaved }: { record: Row; onSaved: () => void }) {
             }
           }}
         >
-          <label>
+          <label data-testid={"discard-discard-quantity-g-label" + "-" + String(record.id)}>
             Discard quantity (g)
-            <input
+            <input data-testid={"discard-grams-input" + "-" + String(record.id)}
               type="number"
               min="1"
               required
@@ -2442,19 +2443,19 @@ function Discard({ record, onSaved }: { record: Row; onSaved: () => void }) {
               onChange={(e) => setGrams(e.target.value)}
             />
           </label>
-          <label>
+          <label data-testid={"discard-reason-label" + "-" + String(record.id)}>
             Reason
-            <input
+            <input data-testid={"discard-reason-input" + "-" + String(record.id)}
               minLength={3}
               required
               value={reason}
               onChange={(e) => setReason(e.target.value)}
             />
           </label>
-          <button className="button danger" disabled={busy}>
+          <button data-testid={"discard-button-button-2" + "-" + String(record.id)} className="button danger" disabled={busy}>
             Confirm discard
           </button>
-          {error && <p className="error">{error}</p>}
+          {error && <p data-testid={"discard-error-p" + "-" + String(record.id)} className="error">{error}</p>}
         </form>
       )}
     </>
@@ -2478,41 +2479,41 @@ function Planning() {
         heading="Crop planning"
         description="Match your sowing schedule to upcoming customer demand."
       >
-        <select
+        <select data-testid="planning-planning-horizon-select"
           aria-label="Planning horizon"
           value={days}
           onChange={(e) => setDays(Number(e.target.value))}
         >
-          <option value={7}>Next 7 days</option>
-          <option value={14}>Next 14 days</option>
-          <option value={30}>Next 30 days</option>
+          <option data-testid="planning-next-7-days-option" value={7}>Next 7 days</option>
+          <option data-testid="planning-next-14-days-option" value={14}>Next 14 days</option>
+          <option data-testid="planning-next-30-days-option" value={30}>Next 30 days</option>
         </select>
-        <Link className="button primary" to="/batches?new=1">
-          <Plus size={16} />
+        <Link data-testid="planning-batches-new-1-link" className="button primary" to="/batches?new=1">
+          <Plus data-testid="planning-plus" size={16} />
           Plan a batch
         </Link>
       </PageHeading>
-      <div className="planning-explainer">
-        <div>
-          <span className="priority-icon green">
-            <CalendarDays size={24} />
+      <div data-testid="planning-planning-explainer-div" className="planning-explainer">
+        <div data-testid="planning-div">
+          <span data-testid="planning-priority-icon-span" className="priority-icon green">
+            <CalendarDays data-testid="planning-calendar-days" size={24} />
           </span>
-          <h2>The right crop. At the right time.</h2>
-          <p>
+          <h2 data-testid="planning-the-right-crop-at-the-right-time-h2">The right crop. At the right time.</h2>
+          <p data-testid="planning-unreserved-demand-includes-draft-orders-school-programs-and-active-subscrip-p">
             Unreserved demand includes draft orders, school programs and active
             subscriptions. Confirmed orders already hold stock. Supply is
             matched by harvest and delivery date, with expired stock excluded.
           </p>
         </div>
-        <div className="formula">
-          <span>Upcoming demand</span>
-          <span>− Available harvests & growing batches</span>
-          <strong>= Additional trays to sow</strong>
+        <div data-testid="planning-formula-div" className="formula">
+          <span data-testid="planning-upcoming-demand-span">Upcoming demand</span>
+          <span data-testid="planning-available-harvests-growing-batches-span">− Available harvests & growing batches</span>
+          <strong data-testid="planning-additional-trays-to-sow-strong">= Additional trays to sow</strong>
         </div>
       </div>
       {!!q.data?.length && (
-        <section className="panel report-chart">
-          <h2>Production and unreserved demand (kg)</h2>
+        <section data-testid="planning-panel-section" className="panel report-chart">
+          <h2 data-testid="planning-production-and-unreserved-demand-kg-h2">Production and unreserved demand (kg)</h2>
           <ResponsiveContainer width="100%" height={240}>
             <BarChart
               data={q.data.map((p: Row) => ({
@@ -2533,52 +2534,52 @@ function Planning() {
           </ResponsiveContainer>
         </section>
       )}
-      <section className="panel">
-        <div className="panel-heading">
-          <div>
-            <h2>Production recommendations</h2>
-            <p>
+      <section data-testid="planning-panel-section-2" className="panel">
+        <div data-testid="planning-panel-heading-div" className="panel-heading">
+          <div data-testid="planning-div-2">
+            <h2 data-testid="planning-production-recommendations-h2">Production recommendations</h2>
+            <p data-testid="planning-expected-yields-are-estimates-confirm-quality-and-actual-harvest-quantities-p">
               Expected yields are estimates; confirm quality and actual harvest
               quantities.
             </p>
           </div>
-          <span className="badge">{days}-day horizon</span>
+          <span data-testid="planning-badge-span" className="badge">{days}-day horizon</span>
         </div>
         {q.error ? (
           <Empty heading="Could not load planning" icon={AlertCircle}>
             {q.error.message}
           </Empty>
         ) : q.data?.length ? (
-          <div className="planning-list">
+          <div data-testid="planning-planning-list-div" className="planning-list">
             {q.data.map((p: Row) => (
-              <div className="plan-row" key={p.product.id}>
-                <span className="crop-icon">
-                  <Leaf size={25} />
+              <div data-testid={"planning-plan-row-div" + "-" + String(p.product.id)} className="plan-row" key={p.product.id}>
+                <span data-testid={"planning-crop-icon-span" + "-" + String(p.product.id)} className="crop-icon">
+                  <Leaf data-testid={"planning-leaf" + "-" + String(p.product.id)} size={25} />
                 </span>
-                <div className="plan-name">
-                  <h3>{p.product.name}</h3>
-                  <small>
+                <div data-testid={"planning-plan-name-div" + "-" + String(p.product.id)} className="plan-name">
+                  <h3 data-testid={"planning-h3" + "-" + String(p.product.id)}>{p.product.name}</h3>
+                  <small data-testid={"planning-growing-days-g-per-tray-small" + "-" + String(p.product.id)}>
                     {p.product.growingDays} growing days ·{" "}
                     {p.product.yieldGramsPerTray}g per tray
                   </small>
                 </div>
-                <div>
-                  <small>Demand</small>
-                  <b>{weight(p.demandGrams)}</b>
+                <div data-testid={"planning-div-3" + "-" + String(p.product.id)}>
+                  <small data-testid={"planning-demand-small" + "-" + String(p.product.id)}>Demand</small>
+                  <b data-testid={"planning-b" + "-" + String(p.product.id)}>{weight(p.demandGrams)}</b>
                 </div>
-                <div>
-                  <small>In stock</small>
-                  <b>{weight(p.stockGrams)}</b>
+                <div data-testid={"planning-div-4" + "-" + String(p.product.id)}>
+                  <small data-testid={"planning-in-stock-small" + "-" + String(p.product.id)}>In stock</small>
+                  <b data-testid={"planning-b-2" + "-" + String(p.product.id)}>{weight(p.stockGrams)}</b>
                 </div>
-                <div>
-                  <small>Growing</small>
-                  <b>{weight(p.growingGrams)}</b>
+                <div data-testid={"planning-div-5" + "-" + String(p.product.id)}>
+                  <small data-testid={"planning-growing-small" + "-" + String(p.product.id)}>Growing</small>
+                  <b data-testid={"planning-b-3" + "-" + String(p.product.id)}>{weight(p.growingGrams)}</b>
                 </div>
-                <div className="plan-advice">
+                <div data-testid={"planning-plan-advice-div" + "-" + String(p.product.id)} className="plan-advice">
                   {p.additionalTrays ? (
                     <>
-                      <b>Plant {p.additionalTrays} trays</b>
-                      <small
+                      <b data-testid={"planning-plant-trays-b" + "-" + String(p.product.id)}>Plant {p.additionalTrays} trays</b>
+                      <small data-testid={"planning-by-small" + "-" + String(p.product.id)}
                         className={
                           new Date(p.plantBy) < new Date() ? "overdue" : ""
                         }
@@ -2607,7 +2608,7 @@ function Planning() {
           >
             Add products and customer demand to see sowing recommendations.
             {!user && (
-              <button className="button primary" onClick={connect}>
+              <button data-testid="planning-button-button" className="button primary" onClick={connect}>
                 Sign in
               </button>
             )}
@@ -2729,34 +2730,34 @@ function Reports() {
         heading="Business reports"
         description="Sales, production and expenses over the period you choose."
       >
-        <label className="date-filter">
+        <label data-testid="reports-date-filter-label" className="date-filter">
           From
-          <input
+          <input data-testid="reports-report-start-date-input"
             aria-label="Report start date"
             type="date"
             value={from}
             onChange={(e) => setFrom(e.target.value)}
           />
         </label>
-        <label className="date-filter">
+        <label data-testid="reports-date-filter-label-2" className="date-filter">
           To
-          <input
+          <input data-testid="reports-report-end-date-input"
             aria-label="Report end date"
             type="date"
             value={to}
             onChange={(e) => setTo(e.target.value)}
           />
         </label>
-        <button
+        <button data-testid="reports-button-button"
           className="button"
           disabled={!exportRows.length}
           onClick={() => csv("kovai-" + tab, exportRows)}
         >
-          <ArrowDownToLine size={16} />
+          <ArrowDownToLine data-testid="reports-arrow-down-to-line" size={16} />
           Export CSV
         </button>
       </PageHeading>
-      <section className="metric-grid report-metrics">
+      <section data-testid="reports-metric-grid-section" className="metric-grid report-metrics">
         {[
           ["Order value", d?.salesPaise],
           ["Net receipts", d?.cashCollectedPaise],
@@ -2766,25 +2767,25 @@ function Reports() {
             d ? d.cashCollectedPaise - d.expensesPaise : undefined,
           ],
         ].map(([label, value]) => (
-          <div className="metric" key={label as string}>
-            <span>{label}</span>
-            <strong>
+          <div data-testid={"reports-metric-div" + "-" + String(label as string)} className="metric" key={label as string}>
+            <span data-testid={"reports-span" + "-" + String(label as string)}>{label}</span>
+            <strong data-testid={"reports-strong" + "-" + String(label as string)}>
               {value === undefined ? "—" : money(value as number)}
             </strong>
           </div>
         ))}
       </section>
-      <div className="notice">
-        <AlertCircle size={17} />
-        <span>
+      <div data-testid="reports-notice-div" className="notice">
+        <AlertCircle data-testid="reports-alert-circle" size={17} />
+        <span data-testid="reports-cash-surplus-is-net-receipts-minus-recorded-expenses-production-cost-and-es-span">
           Cash surplus is net receipts minus recorded expenses. Production cost
           and estimated gross profit use seed consumption and explicitly
           allocated batch expenses.
         </span>
       </div>
       {agg.length > 0 && (
-        <section className="panel report-chart">
-          <h2>Sales by variety</h2>
+        <section data-testid="reports-panel-section" className="panel report-chart">
+          <h2 data-testid="reports-sales-by-variety-h2">Sales by variety</h2>
           <ResponsiveContainer width="100%" height={230}>
             <BarChart data={agg}>
               <CartesianGrid vertical={false} strokeDasharray="3 3" />
@@ -2797,8 +2798,8 @@ function Reports() {
         </section>
       )}
       {!!d?.byCustomerType?.length && (
-        <section className="panel report-chart">
-          <h2>Orders by customer type</h2>
+        <section data-testid="reports-panel-section-2" className="panel report-chart">
+          <h2 data-testid="reports-orders-by-customer-type-h2">Orders by customer type</h2>
           <ResponsiveContainer width="100%" height={230}>
             <BarChart
               data={d.byCustomerType.map((r: Row) => ({
@@ -2816,9 +2817,9 @@ function Reports() {
         </section>
       )}
       {!!yieldData.length && (
-        <div className="report-chart-grid">
-          <section className="panel report-chart">
-            <h2>Harvest yield (kg)</h2>
+        <div data-testid="reports-report-chart-grid-div" className="report-chart-grid">
+          <section data-testid="reports-panel-section-3" className="panel report-chart">
+            <h2 data-testid="reports-harvest-yield-kg-h2">Harvest yield (kg)</h2>
             <ResponsiveContainer width="100%" height={230}>
               <BarChart data={yieldData}>
                 <CartesianGrid vertical={false} strokeDasharray="3 3" />
@@ -2830,8 +2831,8 @@ function Reports() {
               </BarChart>
             </ResponsiveContainer>
           </section>
-          <section className="panel report-chart">
-            <h2>Harvest wastage (%)</h2>
+          <section data-testid="reports-panel-section-4" className="panel report-chart">
+            <h2 data-testid="reports-harvest-wastage-h2">Harvest wastage (%)</h2>
             <ResponsiveContainer width="100%" height={230}>
               <BarChart data={yieldData}>
                 <CartesianGrid vertical={false} strokeDasharray="3 3" />
@@ -2846,21 +2847,21 @@ function Reports() {
       )}
       {tab === "costs" && d && (
         <>
-          <div className="operating-strip">
+          <div data-testid="reports-operating-strip-div" className="operating-strip">
             {[
               ["Delivered sales, excl. tax", d.deliveredNetSalesPaise],
               ["Allocated production cost", d.deliveredCostPaise],
               ["Estimated gross profit", d.estimatedGrossProfitPaise],
             ].map(([label, value]) => (
-              <div key={String(label)}>
-                <span>{label}</span>
-                <b>{money(Number(value))}</b>
+              <div data-testid={"reports-div" + "-" + String(String(label))} key={String(label)}>
+                <span data-testid={"reports-span-2" + "-" + String(String(label))}>{label}</span>
+                <b data-testid={"reports-b" + "-" + String(String(label))}>{money(Number(value))}</b>
               </div>
             ))}
           </div>
-          <div className="notice">
-            <AlertCircle size={18} />
-            <span>
+          <div data-testid="reports-notice-div-2" className="notice">
+            <AlertCircle data-testid="reports-alert-circle-2" size={18} />
+            <span data-testid="reports-margin-covers-delivered-orders-created-in-this-reporting-period-costs-inclu-span">
               Margin covers delivered orders created in this reporting period.
               Costs include consumed seeds and expenses explicitly assigned to
               their growing batches, apportioned over usable harvest.
@@ -2870,8 +2871,8 @@ function Reports() {
           </div>
         </>
       )}
-      <section className="panel">
-        <div className="tabs padded">
+      <section data-testid="reports-panel-section-5" className="panel">
+        <div data-testid="reports-tabs-div" className="tabs padded">
           {[
             ["sales", "Sales ledger"],
             ["yield", "Production yield"],
@@ -2883,7 +2884,7 @@ function Reports() {
             ["outstanding", "Outstanding"],
             ["costs", "Production cost & margin"],
           ].map(([key, label]) => (
-            <button
+            <button data-testid={"reports-button" + "-" + String(key)}
               className={tab === key ? "selected" : ""}
               key={key}
               onClick={() => setTab(key)}
@@ -2897,20 +2898,20 @@ function Reports() {
             {q.error.message}
           </Empty>
         ) : exportRows.length ? (
-          <div className="simple-table">
-            <table>
-              <thead>
-                <tr>
+          <div data-testid="reports-simple-table-div" className="simple-table">
+            <table data-testid="reports-table">
+              <thead data-testid="reports-thead">
+                <tr data-testid="reports-tr">
                   {Object.keys(exportRows[0]).map((k) => (
-                    <th key={k}>{k}</th>
+                    <th data-testid={"reports-th" + "-" + String(k)} key={k}>{k}</th>
                   ))}
                 </tr>
               </thead>
-              <tbody>
+              <tbody data-testid="reports-tbody">
                 {exportRows.map((r, i) => (
-                  <tr key={i}>
+                  <tr data-testid={"reports-tr-2" + "-" + String(i)} key={i}>
                     {Object.values(r).map((v, j) => (
-                      <td key={j}>{String(v ?? "")}</td>
+                      <td data-testid={"reports-td" + "-" + String(j) + "-" + String(i)} key={j}>{String(v ?? "")}</td>
                     ))}
                   </tr>
                 ))}
@@ -2942,13 +2943,13 @@ function Billing() {
         heading="Monthly statements"
         description="Customer balances for orders delivered or scheduled in the selected month."
       >
-        <input
+        <input data-testid="billing-statement-month-input"
           type="month"
           aria-label="Statement month"
           value={month}
           onChange={(e) => setMonth(e.target.value)}
         />
-        <button
+        <button data-testid="billing-button-button"
           className="button"
           disabled={!rows.length}
           onClick={() =>
@@ -2964,47 +2965,47 @@ function Billing() {
             )
           }
         >
-          <ArrowDownToLine size={16} />
+          <ArrowDownToLine data-testid="billing-arrow-down-to-line" size={16} />
           Export CSV
         </button>
       </PageHeading>
-      <div className="tabs">
-        <Link to="/payments">Transactions</Link>
-        <Link to="/billing" className="selected">
+      <div data-testid="billing-tabs-div" className="tabs">
+        <Link data-testid="billing-payments-link" to="/payments">Transactions</Link>
+        <Link data-testid="billing-billing-link" to="/billing" className="selected">
           Monthly statements
         </Link>
       </div>
-      <div className="notice">
-        <Receipt size={18} />
-        <span>
+      <div data-testid="billing-notice-div" className="notice">
+        <Receipt data-testid="billing-receipt" size={18} />
+        <span data-testid="billing-these-are-account-statements-not-tax-invoices-payments-reflect-current-net--span">
           These are account statements, not tax invoices. Payments reflect
           current net receipts, including refunds.
         </span>
       </div>
-      {q.error && <p className="error">{q.error.message}</p>}
-      <section className="panel">
+      {q.error && <p data-testid="billing-error-p" className="error">{q.error.message}</p>}
+      <section data-testid="billing-panel-section" className="panel">
         {rows.length ? (
-          <div className="simple-table">
-            <table>
-              <thead>
-                <tr>
-                  <th>Customer</th>
-                  <th>Type</th>
-                  <th>Orders</th>
-                  <th>Order value</th>
-                  <th>Paid</th>
-                  <th>Outstanding</th>
+          <div data-testid="billing-simple-table-div" className="simple-table">
+            <table data-testid="billing-table">
+              <thead data-testid="billing-thead">
+                <tr data-testid="billing-tr">
+                  <th data-testid="billing-customer-th">Customer</th>
+                  <th data-testid="billing-type-th">Type</th>
+                  <th data-testid="billing-orders-th">Orders</th>
+                  <th data-testid="billing-order-value-th">Order value</th>
+                  <th data-testid="billing-paid-th">Paid</th>
+                  <th data-testid="billing-outstanding-th">Outstanding</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody data-testid="billing-tbody">
                 {rows.map((r: Row) => (
-                  <tr key={r.customer.id}>
-                    <td>{r.customer.name}</td>
-                    <td>{title(r.customer.type)}</td>
-                    <td>{r.orders.length}</td>
-                    <td>{money(r.invoiceAmountPaise)}</td>
-                    <td>{money(r.amountPaidPaise)}</td>
-                    <td>{money(r.outstandingPaise)}</td>
+                  <tr data-testid={"billing-tr-2" + "-" + String(r.customer.id)} key={r.customer.id}>
+                    <td data-testid={"billing-td" + "-" + String(r.customer.id)}>{r.customer.name}</td>
+                    <td data-testid={"billing-td-2" + "-" + String(r.customer.id)}>{title(r.customer.type)}</td>
+                    <td data-testid={"billing-td-3" + "-" + String(r.customer.id)}>{r.orders.length}</td>
+                    <td data-testid={"billing-td-4" + "-" + String(r.customer.id)}>{money(r.invoiceAmountPaise)}</td>
+                    <td data-testid={"billing-td-5" + "-" + String(r.customer.id)}>{money(r.amountPaidPaise)}</td>
+                    <td data-testid={"billing-td-6" + "-" + String(r.customer.id)}>{money(r.outstandingPaise)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -3062,36 +3063,36 @@ function Traceability() {
         heading="Traceability"
         description="Find where an order came from, or where a growing batch went."
       />
-      <section className="panel trace-search">
-        <ShieldCheck size={32} />
-        <form
+      <section data-testid="traceability-panel-section" className="panel trace-search">
+        <ShieldCheck data-testid="traceability-shield-check" size={32} />
+        <form data-testid="traceability-form"
           onSubmit={(e) => {
             e.preventDefault();
             if (!user) return connect();
             setQuery(input);
           }}
         >
-          <label>
+          <label data-testid="traceability-order-number-batch-code-or-record-id-label">
             Order number, batch code or record ID
-            <div className="trace-input">
-              <input
+            <div data-testid="traceability-trace-input-div" className="trace-input">
+              <input data-testid="traceability-enter-an-order-number-or-growing-batch-code-input"
                 placeholder="Enter an order number or growing batch code"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 required
               />
-              <button className="button primary">
-                Trace record <ArrowRight size={16} />
+              <button data-testid="traceability-button-button" className="button primary">
+                Trace record <ArrowRight data-testid="traceability-arrow-right" size={16} />
               </button>
             </div>
           </label>
         </form>
       </section>
-      {q.error && <p className="error">{q.error.message}</p>}
+      {q.error && <p data-testid="traceability-error-p" className="error">{q.error.message}</p>}
       {r ? (
-        <section className="panel trace-results">
-          <h2>{q.data.type === "order" ? r.number : r.code}</h2>
-          <p>
+        <section data-testid="traceability-panel-section-2" className="panel trace-results">
+          <h2 data-testid="traceability-h2">{q.data.type === "order" ? r.number : r.code}</h2>
+          <p data-testid="traceability-allocation-records-includes-cancelled-allocations-for-audit-history-p">
             {batches.length} allocation records · Includes cancelled allocations
             for audit history
           </p>
@@ -3103,7 +3104,7 @@ function Traceability() {
             </Empty>
           )}
           {batches.map((x: Row, i: number) => (
-            <div className="trace-chain" key={i}>
+            <div data-testid={"traceability-trace-chain-div" + "-" + String(i)} className="trace-chain" key={i}>
               {[
                 [Package, "Supplier", x.batch.seedLot.supplier.name],
                 [Sprout, "Seed lot", x.batch.seedLot.lotNumber],
@@ -3116,20 +3117,20 @@ function Traceability() {
                 ],
                 [Users, "Customer", x.customer.name],
               ].map(([Icon, label, value]: any) => (
-                <div key={label}>
+                <div data-testid={"traceability-div" + "-" + String(label) + "-" + String(i)} key={label}>
                   <Icon size={19} />
-                  <small>{label}</small>
-                  <b>{value}</b>
+                  <small data-testid={"traceability-small" + "-" + String(label) + "-" + String(i)}>{label}</small>
+                  <b data-testid={"traceability-b" + "-" + String(label) + "-" + String(i)}>{value}</b>
                 </div>
               ))}
-              <span>
+              <span data-testid={"traceability--span" + "-" + String(i)}>
                 {weight(x.grams)} · {title(x.status)}
               </span>
             </div>
           ))}
         </section>
       ) : (
-        <section className="panel">
+        <section data-testid="traceability-panel-section-3" className="panel">
           <Empty heading="A complete chain of custody" icon={ShieldCheck}>
             Supplier → Seed lot → Growing batch → Harvest → Packing → Customer
           </Empty>
@@ -3161,12 +3162,12 @@ function SettingsPage() {
         heading="Settings"
         description="Business details, team access and operational history."
       />
-      <div className="settings-grid">
+      <div data-testid="settings-page-settings-grid-div" className="settings-grid">
         <StoreSettings />
-        <section className="panel settings-form">
-          <h2>Business identity</h2>
-          <p>Used on public package traceability records.</p>
-          <form
+        <section data-testid="settings-page-panel-section" className="panel settings-form">
+          <h2 data-testid="settings-page-business-identity-h2">Business identity</h2>
+          <p data-testid="settings-page-used-on-public-package-traceability-records-p">Used on public package traceability records.</p>
+          <form data-testid="settings-page-form"
             onSubmit={async (e) => {
               e.preventDefault();
               if (!user) return connect();
@@ -3185,61 +3186,61 @@ function SettingsPage() {
               }
             }}
           >
-            <label>
+            <label data-testid="settings-page-business-name-label">
               Business name
-              <input
+              <input data-testid="settings-page-your-registered-business-name-input"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
                 placeholder="Your registered business name"
               />
             </label>
-            <label>
+            <label data-testid="settings-page-farm-address-label">
               Farm address
-              <textarea
+              <textarea data-testid="settings-page-coimbatore-tamil-nadu-textarea"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 placeholder="Coimbatore, Tamil Nadu"
               />
             </label>
-            <button className="button primary">Save details</button>
-            {error && <p className="error">{error}</p>}
+            <button data-testid="settings-page-button-button" className="button primary">Save details</button>
+            {error && <p data-testid="settings-page-error-p" className="error">{error}</p>}
           </form>
         </section>
-        <section className="panel settings-links">
-          <Link to="/users">
-            <span className="priority-icon green">
-              <Users size={21} />
+        <section data-testid="settings-page-panel-section-2" className="panel settings-links">
+          <Link data-testid="settings-page-users-link" to="/users">
+            <span data-testid="settings-page-priority-icon-span" className="priority-icon green">
+              <Users data-testid="settings-page-users" size={21} />
             </span>
-            <span>
-              <b>Team & access</b>
-              <small>Manage staff accounts and roles</small>
+            <span data-testid="settings-page-span">
+              <b data-testid="settings-page-team-access-b">Team & access</b>
+              <small data-testid="settings-page-manage-staff-accounts-and-roles-small">Manage staff accounts and roles</small>
             </span>
-            <ArrowRight size={18} />
+            <ArrowRight data-testid="settings-page-arrow-right" size={18} />
           </Link>
-          <Link to="/audit">
-            <span className="priority-icon purple">
-              <History size={21} />
+          <Link data-testid="settings-page-audit-link" to="/audit">
+            <span data-testid="settings-page-priority-icon-span-2" className="priority-icon purple">
+              <History data-testid="settings-page-history" size={21} />
             </span>
-            <span>
-              <b>Audit log</b>
-              <small>Review important business changes</small>
+            <span data-testid="settings-page-span-2">
+              <b data-testid="settings-page-audit-log-b">Audit log</b>
+              <small data-testid="settings-page-review-important-business-changes-small">Review important business changes</small>
             </span>
-            <ArrowRight size={18} />
+            <ArrowRight data-testid="settings-page-arrow-right-2" size={18} />
           </Link>
-          <Link to="/movements">
-            <span className="priority-icon gold">
-              <Layers size={21} />
+          <Link data-testid="settings-page-movements-link" to="/movements">
+            <span data-testid="settings-page-priority-icon-span-3" className="priority-icon gold">
+              <Layers data-testid="settings-page-layers" size={21} />
             </span>
-            <span>
-              <b>Stock movements</b>
-              <small>Inspect the inventory transaction ledger</small>
+            <span data-testid="settings-page-span-3">
+              <b data-testid="settings-page-stock-movements-b">Stock movements</b>
+              <small data-testid="settings-page-inspect-the-inventory-transaction-ledger-small">Inspect the inventory transaction ledger</small>
             </span>
-            <ArrowRight size={18} />
+            <ArrowRight data-testid="settings-page-arrow-right-3" size={18} />
           </Link>
-          <div className="setting-note">
-            <ShieldCheck size={20} />
-            <p>
+          <div data-testid="settings-page-setting-note-div" className="setting-note">
+            <ShieldCheck data-testid="settings-page-shield-check" size={20} />
+            <p data-testid="settings-page-children-s-personal-information-is-not-collected-school-programs-use-aggreg-p">
               Children's personal information is not collected. School programs
               use aggregate student and pack counts.
             </p>
@@ -3257,21 +3258,21 @@ function OrderPaymentConfirmation({ order, onSaved }: { order: Row; onSaved: () 
   const [busy, setBusy] = useState(false), [error, setError] = useState('');
   const attempt = useRef({ requestKey: crypto.randomUUID(), paidAt: new Date().toISOString() });
   const balance = Math.max(0, order.totalPaise - order.paidPaise);
-  if (!balance) return <p className="success">Payment confirmed · Paid in full</p>;
+  if (!balance) return <p data-testid={"order-payment-confirmation-success-p" + "-" + String(order.id)} className="success">Payment confirmed · Paid in full</p>;
   if (order.status === 'CANCELLED') return null;
-  if (order.status === 'DRAFT') return <p>Confirm the order using the order status action below before confirming payment.</p>;
-  return <section className="payment-confirmation"><h3>Confirm payment received</h3>
-    <p>Outstanding: <strong>{money(balance)}</strong>. Record this only after checking that the money was received.</p>
-    {order.checkout?.paymentReference && <p>Customer reference: <strong>{order.checkout.paymentReference}</strong></p>}
-    <div className="form-grid"><label>Payment method<select value={method} disabled={busy} onChange={e => setMethod(e.target.value)}>{['UPI','CASH','BANK_TRANSFER','CARD','OTHER'].map(m => <option key={m}>{m}</option>)}</select></label>
-    <label>Payment reference<input value={reference} maxLength={200} disabled={busy} onChange={e => setReference(e.target.value)}/></label></div>
-    <label><input type="checkbox" checked={verified} disabled={busy} onChange={e => setVerified(e.target.checked)}/> I have verified receipt of {money(balance)}.</label>
-    {error && <p className="error" role="alert">{error}</p>}
-    <div className="action-row"><button className="button primary" disabled={busy || !verified} onClick={async () => {
+  if (order.status === 'DRAFT') return <p data-testid={"order-payment-confirmation-confirm-the-order-using-the-order-status-action-below-before-confirming-pay-p" + "-" + String(order.id)}>Confirm the order using the order status action below before confirming payment.</p>;
+  return <section data-testid={"order-payment-confirmation-payment-confirmation-section" + "-" + String(order.id)} className="payment-confirmation"><h3 data-testid={"order-payment-confirmation-confirm-payment-received-h3" + "-" + String(order.id)}>Confirm payment received</h3>
+    <p data-testid={"order-payment-confirmation-outstanding-record-this-only-after-checking-that-the-money-was-received-p" + "-" + String(order.id)}>Outstanding: <strong data-testid={"order-payment-confirmation-strong" + "-" + String(order.id)}>{money(balance)}</strong>. Record this only after checking that the money was received.</p>
+    {order.checkout?.paymentReference && <p data-testid={"order-payment-confirmation-customer-reference-p" + "-" + String(order.id)}>Customer reference: <strong data-testid={"order-payment-confirmation-strong-2" + "-" + String(order.id)}>{order.checkout.paymentReference}</strong></p>}
+    <div data-testid={"order-payment-confirmation-form-grid-div" + "-" + String(order.id)} className="form-grid"><label data-testid={"order-payment-confirmation-payment-method-label" + "-" + String(order.id)}>Payment method<select data-testid={"order-payment-confirmation-method-select" + "-" + String(order.id)} value={method} disabled={busy} onChange={e => setMethod(e.target.value)}>{['UPI','CASH','BANK_TRANSFER','CARD','OTHER'].map(m => <option data-testid={"order-payment-confirmation-option" + "-" + String(order.id) + "-" + String(m)} key={m}>{m}</option>)}</select></label>
+    <label data-testid={"order-payment-confirmation-payment-reference-label" + "-" + String(order.id)}>Payment reference<input data-testid={"order-payment-confirmation-reference-input" + "-" + String(order.id)} value={reference} maxLength={200} disabled={busy} onChange={e => setReference(e.target.value)}/></label></div>
+    <label data-testid={"order-payment-confirmation-i-have-verified-receipt-of-label" + "-" + String(order.id)}><input data-testid={"order-payment-confirmation-verified-input" + "-" + String(order.id)} type="checkbox" checked={verified} disabled={busy} onChange={e => setVerified(e.target.checked)}/> I have verified receipt of {money(balance)}.</label>
+    {error && <p data-testid={"order-payment-confirmation-error-p" + "-" + String(order.id)} className="error" role="alert">{error}</p>}
+    <div data-testid={"order-payment-confirmation-action-row-div" + "-" + String(order.id)} className="action-row"><button data-testid={"order-payment-confirmation-button-button" + "-" + String(order.id)} className="button primary" disabled={busy || !verified} onClick={async () => {
       setBusy(true); setError('');
       try { await api('payments', { method:'POST', body:JSON.stringify({ orderId:order.id, amountPaise:balance, kind:'PAYMENT', method, reference, ...attempt.current }) }); onSaved(); }
       catch(e: any) { setError(e.message); } finally { setBusy(false); }
-    }}>{busy ? 'Confirming payment…' : 'Confirm payment received'}</button><Link className="text-link" to="/payments">Record a partial payment</Link></div>
+    }}>{busy ? 'Confirming payment…' : 'Confirm payment received'}</button><Link data-testid={"order-payment-confirmation-payments-link" + "-" + String(order.id)} className="text-link" to="/payments">Record a partial payment</Link></div>
   </section>;
 }
 
