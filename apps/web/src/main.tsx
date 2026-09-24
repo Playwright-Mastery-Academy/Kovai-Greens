@@ -10,6 +10,7 @@ import React, {
 import { createRoot } from "react-dom/client";
 import {
   BrowserRouter,
+  Navigate,
   Routes,
   Route,
   NavLink,
@@ -339,6 +340,7 @@ function App() {
         <LoaderCircle data-testid="app-loading-loader-circle" className="spin" aria-label="Loading" />
       </main>
     );
+  if (user?.role === "GUEST") return <Navigate to="/shop" replace />;
   if (!user)
     return (
       <main data-testid="app-login-page-main-2" className="login-page">
@@ -474,7 +476,8 @@ function App() {
               <span data-testid="app-environment-span" className="environment">{user ? "Business workspace" : "Setup required"}</span>
               <button data-testid="app-account-and-password-button"
                 className="avatar small"
-                aria-label="Account and password"
+                aria-label={user?.role === "ADMIN" ? "Account" : "Account and password"}
+                disabled={user?.role === "ADMIN"}
                 onClick={() =>
                   user ? setAccountOpen(true) : setConnecting(true)
                 }
@@ -548,7 +551,7 @@ function App() {
             </IconButton>
           </div>
         )}
-        {accountOpen && <AccountDialog onClose={() => setAccountOpen(false)} />}
+        {accountOpen && user?.role !== "ADMIN" && <AccountDialog onClose={() => setAccountOpen(false)} />}
         {connecting && (
           <Connect
             onClose={() => setConnecting(false)}
@@ -2110,6 +2113,7 @@ function Records({ resource: page }: { resource: string }) {
                     {[
                       "OWNER",
                       "ADMIN",
+                      "GUEST",
                       "PRODUCTION_MANAGER",
                       "FARM_WORKER",
                       "SALES",

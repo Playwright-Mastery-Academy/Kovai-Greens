@@ -1,6 +1,7 @@
 export const roles = [
   "OWNER",
   "ADMIN",
+  "GUEST",
   "PRODUCTION_MANAGER",
   "FARM_WORKER",
   "SALES",

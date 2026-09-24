@@ -163,11 +163,12 @@ export const fields: Record<string, Field[]> = {
     f("name", "Full name"),
     f("username", "Username"),
     f("password", "Temporary password", "password", {
-      help: "At least 12 characters. Share securely.",
+      help: "At least 10 characters for Admin/Guest; 12 for other roles. Share securely.",
     }),
     f("role", "Role", "select", {
       options: [
         "ADMIN",
+        "GUEST",
         "PRODUCTION_MANAGER",
         "FARM_WORKER",
         "SALES",

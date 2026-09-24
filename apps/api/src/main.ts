@@ -178,10 +178,12 @@ class AuthGuard implements CanActivate {
       )
         throw 0;
       r.actor = { id: u.id, name: u.name, role: u.role };
-      return true;
     } catch {
       throw new UnauthorizedException("Please sign in");
     }
+    // Guest sessions identify shoppers but never authorize staff operations.
+    assertRole(r.actor.role !== "GUEST" || c.getHandler().name === "me");
+    return true;
   }
 }
 @Catch()
@@ -647,6 +649,7 @@ class Operations {
     @Body() b: unknown,
     @Res({ passthrough: true }) res: Response,
   ) {
+    assertRole(!["ADMIN", "GUEST"].includes(r.actor.role));
     const v = z
       .object({
         currentPassword: z.string().min(1).max(128),

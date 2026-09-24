@@ -226,10 +226,13 @@ export const schemas = {
         .max(100)
         .regex(/^[a-zA-Z0-9_.@-]+$/)
         .transform((v) => v.toLowerCase()),
-      password: z.string().min(12).max(128),
+      password: z.string().min(10).max(128),
       role: z.enum(roles),
     })
-    .strict(),
+    .strict()
+    .refine(v => ["ADMIN", "GUEST"].includes(v.role) || v.password.length >= 12, {
+      path: ["password"], message: "This role requires at least 12 characters",
+    }),
 };
 export const loginSchema = z
   .object({
