@@ -1616,6 +1616,19 @@ class Operations {
       return safe;
     });
   }
+  @Post("users/:id/password") async resetUserPassword(@Req() r: R, @Param("id") id: string, @Body() body: unknown) {
+    assertRole(r.actor.role === "OWNER");
+    const { password } = z.object({ password: z.string().min(10).max(128) }).strict().parse(body);
+    const passwordHash = await hash(password, 12);
+    return transact(async tx => {
+      const user = await tx.user.findUniqueOrThrow({ where: { id } });
+      assert(user.role !== "OWNER", "Use your account settings to change an owner password");
+      await tx.user.update({ where: { id }, data: { passwordHash } });
+      await tx.session.deleteMany({ where: { userId: id } });
+      await audit(tx, r.actor, "PASSWORD_RESET", "users", id, undefined, { sessionsRevoked: true });
+      return { ok: true };
+    });
+  }
   @Delete("users/:id") async deleteUser(@Req() r: R, @Param("id") id: string) {
     assertRole(["OWNER", "ADMIN"].includes(r.actor.role));
     assert(id !== r.actor.id, "You cannot delete your own account");
