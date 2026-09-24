@@ -6,6 +6,7 @@ import {
   Get,
   Post,
   Patch,
+  Delete,
   Body,
   Param,
   Query,
@@ -244,6 +245,27 @@ async function session(
 @ApiTags("Authentication")
 @Controller("api/auth")
 class AuthController {
+  @Post("register") async register(@Body() body: unknown, @Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    const key = "register:" + req.ip;
+    const now = Date.now();
+    for (const [k, v] of attempts) if (v.until < now) attempts.delete(k);
+    const attempt = attempts.get(key) || { count: 0, until: now + 900000 };
+    if (++attempt.count > 8) throw new HttpException("Too many registration attempts. Please try again later.", 429);
+    attempts.set(key, attempt);
+    const input = z.object({
+      name: z.string().trim().min(1).max(100),
+      username: z.string().trim().min(1).max(100).regex(/^[a-zA-Z0-9_.@-]+$/).transform(v => v.toLowerCase()),
+      password: z.string().min(10).max(128),
+    }).strict().parse(body);
+    const passwordHash = await hash(input.password, 12);
+    const user = await transact(async tx => {
+      const created = await tx.user.create({ data: { name: input.name, username: input.username, passwordHash, role: "GUEST" } });
+      await audit(tx, { id: created.id, name: created.name, role: "GUEST" }, "REGISTERED", "users", created.id, undefined, { name: created.name, username: created.username, role: created.role });
+      return created;
+    });
+    return session(user, res);
+  }
+
   @Post("login")
   @ApiBody({
     schema: {
@@ -1583,7 +1605,8 @@ class Operations {
         data = { ...v, actorId: r.actor.id };
       }
       if (resource === "users") {
-        assertRole(r.actor.role === "OWNER");
+        assertRole(["OWNER", "ADMIN"].includes(r.actor.role));
+        assertRole(r.actor.role === "OWNER" || v.role !== "OWNER");
         const { password, ...rest } = v;
         data = { ...rest, passwordHash: await hash(password, 12) };
       }
@@ -1591,6 +1614,18 @@ class Operations {
       const { passwordHash, ...safe } = result;
       await audit(tx, r.actor, "CREATED", resource, result.id, undefined, safe);
       return safe;
+    });
+  }
+  @Delete("users/:id") async deleteUser(@Req() r: R, @Param("id") id: string) {
+    assertRole(["OWNER", "ADMIN"].includes(r.actor.role));
+    assert(id !== r.actor.id, "You cannot delete your own account");
+    return transact(async tx => {
+      const user = await tx.user.findUniqueOrThrow({ where: { id } });
+      assert(user.role !== "OWNER", "Owner accounts cannot be deleted");
+      await tx.session.deleteMany({ where: { userId: id } });
+      await tx.user.delete({ where: { id } });
+      await audit(tx, r.actor, "DELETED", "users", id, { name: user.name, username: user.username, role: user.role });
+      return { ok: true };
     });
   }
   @Patch(":resource/:id") async update(
@@ -1757,28 +1792,20 @@ class Operations {
         return result;
       }
       if (resource === "users") {
-        assertRole(r.actor.role === "OWNER");
-        const v = z
-          .object({
-            role: z.enum(roles).optional(),
-            active: z.boolean().optional(),
-          })
-          .strict()
-          .parse(body);
+        assertRole(["OWNER", "ADMIN"].includes(r.actor.role));
+        const v = z.object({
+          name: z.string().trim().min(1).max(100).optional(),
+          username: z.string().trim().min(1).max(100).regex(/^[a-zA-Z0-9_.@-]+$/).transform(v => v.toLowerCase()).optional(),
+          role: z.enum(roles).optional(), active: z.boolean().optional(),
+        }).strict().parse(body);
         assert(id !== r.actor.id, "You cannot change your own access");
         const old = await tx.user.findUniqueOrThrow({ where: { id } });
+        assertRole(r.actor.role === "OWNER" || (old.role !== "OWNER" && v.role !== "OWNER"));
         const result = await tx.user.update({ where: { id }, data: v });
         await tx.session.deleteMany({ where: { userId: id } });
-        await audit(
-          tx,
-          r.actor,
-          "ACCESS_CHANGED",
-          "users",
-          id,
-          { role: old.role, active: old.active },
-          v,
-        );
-        return { id: result.id, role: result.role, active: result.active };
+        await audit(tx, r.actor, "UPDATED", "users", id, { name: old.name, username: old.username, role: old.role, active: old.active }, v);
+        const { passwordHash, ...safe } = result;
+        return safe;
       }
       assert(
         ["products", "customers", "suppliers"].includes(resource),

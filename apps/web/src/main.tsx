@@ -1,4 +1,5 @@
 import Shop from "./Shop";
+import UserEditor from "./UserEditor";
 import StoreSettings from "./StoreSettings";
 import React, {
   useState,
@@ -1699,7 +1700,7 @@ function Records({ resource: page }: { resource: string }) {
       user &&
       ["SALES", "FARM_WORKER"].includes(user.role)
     ) &&
-    !(resource === "users" && user?.role !== "OWNER") &&
+    !(resource === "users" && !["OWNER", "ADMIN"].includes(user?.role || "")) &&
     !(
       resource === "orders" &&
       user &&
@@ -2100,42 +2101,9 @@ function Records({ resource: page }: { resource: string }) {
                 }}
               />
             )}
-            {resource === "users" &&
-              user?.role === "OWNER" &&
-              selected.id !== user.id && (
-                <label data-testid={"records-role-label" + "-" + String(resource)}>
-                  Role
-                  <select data-testid={"records-selected-role-select" + "-" + String(resource)}
-                    value={selected.role}
-                    disabled={busy}
-                    onChange={(e) => mutate({ role: e.target.value })}
-                  >
-                    {[
-                      "OWNER",
-                      "ADMIN",
-                      "GUEST",
-                      "PRODUCTION_MANAGER",
-                      "FARM_WORKER",
-                      "SALES",
-                      "DELIVERY",
-                    ].map((role) => (
-                      <option data-testid={"records-option-2" + "-" + String(resource) + "-" + String(role)} key={role} value={role}>
-                        {title(role)}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              )}
-            {resource === "users" &&
-              user?.role === "OWNER" &&
-              selected.id !== user.id && (
-                <button data-testid={"records-button-button-8" + "-" + String(resource)}
-                  className="button danger"
-                  onClick={() => mutate({ active: !selected.active })}
-                >
-                  {selected.active ? "Deactivate user" : "Reactivate user"}
-                </button>
-              )}
+            {resource === "users" && user && ["OWNER", "ADMIN"].includes(user.role) && selected.id !== user.id && (user.role === "OWNER" || selected.role !== "OWNER") && (
+              <UserEditor key={selected.id} record={selected} owner={user.role === "OWNER"} onSaved={() => { saved(); setSelected(null); }} />
+            )}
           </div>
           {error && (
             <p data-testid={"records-error-p-2" + "-" + String(resource)} role="alert" className="error">
